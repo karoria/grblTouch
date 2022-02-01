@@ -1,0 +1,721 @@
+/*
+  style.css - Part of grblTouch
+
+  Copyright (c) 2022 Ravi Karoria (www.engilabs.com | karoria@gmail.com)
+
+  grblTouch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  grblTouch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  To get a copy of the GNU General Public License, see <http://www.gnu.org/licenses/>.
+*/
+
+
+
+* {
+    box-sizing: border-box;
+    font-family: sans-serif, arial;
+    touch-action: pan-y;
+}
+/* 
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+html {
+  height: -webkit-fill-available;
+} */
+
+#brightness {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  display: block;
+  background: rgba(0, 0, 0, 0);
+  pointer-events: none; /* to see through for mouse clicks, etc. */
+}
+
+/* For removing up and down arrows when input field is selected */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+img {
+  position: absolute;
+  right: 1vw;
+  bottom: 9vmin;
+  width: 19vw;
+  /* filter:drop-shadow(2px 2px 1px grey); */
+  z-index: 3;
+}
+
+#console {
+  position: absolute;
+  left: 40vw;
+  bottom: 10vmin;
+  width: 37vw;
+  height: 18vmin;
+  border: 0.5vmin solid orange;
+  border-radius: 2vmin;
+  font-family: 'Times New Roman', serif;
+  font-size: min(3.3vh, 2vw);
+  z-index: 2; 
+  color:rgb(70, 70, 70);
+  background-color: transparent;
+}
+
+/* Style the tab content */
+.tabcontent {
+  padding: 0px 12px;
+  width: 100vw; /*100vw*/
+  height: 70vh; /*80vh*/
+  top: 30vh;
+  left: 0;
+  position: absolute;
+  /* border: 5px solid darkblue; */  
+}
+
+#jog {
+  background-color: lightgrey;
+  z-index: 1;     /* Default tab on top of all tabs */
+}
+#run {
+  background-color: lightyellow;
+}
+#settings {
+  background-color: black;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tablinks {
+  position: absolute;
+  bottom: 0;
+  height: 8vmin;
+  width: 14vw;
+  color: rgb(70,70,70);
+  font-size: min(6vh, 3vw);
+  background-color: lightgrey;
+  vertical-align: bottom;
+  transition: 0.2s;
+  border: 0.5vh solid rgb(70, 70, 70);
+  border-radius: 2vmin 2vmin 0 0;
+  border-bottom: none;
+  z-index: 2;
+}
+
+/* Change background color of buttons on hover */
+.tab > button:hover {
+  background-color: transparent;
+  color: darkblue;
+  border-bottom: none;
+  transition: 0.2s;
+}
+/* Create an active/current "tab button" class */
+.tab > button.active {
+  background-color: orange;
+  color: darkblue;
+  transition: 0.2s;
+  border-color: darkblue;
+  height: 9vmin;
+  /* padding-bottom: 2vh; */
+  border: 0.5vh solid darkblue;
+  border-bottom: none;
+  font-weight: bold;
+}
+#jogbtn {
+  right: 17vw;
+}
+#runbtn {
+  right: 2vw;
+}
+#settingsbtn {
+  right: 2vw;
+}
+
+
+
+.dro {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 30vh;
+  width: 100vw;
+  background-color: black;
+}
+
+.wcs{
+  position: absolute;
+  top: 0;
+  height: 8vh;
+  width: 18vw;
+  background-color: transparent;
+  font-size: min(8vh, 4vw);
+  color: whitesmoke;
+  text-align: right;
+  border: none;
+}
+
+.drolabel {
+  position: absolute;
+  top: 6vh;
+  opacity: 50%;
+  font-size: 6vh;
+
+}
+#labelXw {
+  left: 1vw;
+  color: peachpuff;
+}
+#labelYw {
+  left: 23vw;
+  color: powderblue;
+}
+#labelZw {
+  left: 45vw;
+  color: khaki;
+}
+#labelAw {
+  left: 67vw;
+  color: tan;
+}
+
+#Xw {
+  left: 1vw;
+  color: peachpuff;
+}
+#Yw {
+  left: 22vw;
+  color: powderblue;
+}
+#Zw {
+  left: 43vw;
+  color: khaki;
+}
+#Aw {
+  left: 64vw;
+  color: tan;
+}
+
+.mcs{
+  position: absolute;
+  top: 7vh;
+  height: 4vh;
+  width: 18vw;
+  background-color: transparent;
+  font-size: 3vmin;
+  color:lightgray;
+  text-align: right;
+  outline: none;
+  border: hidden;
+}
+#Xs {
+  left: 1vw;
+}
+#Ys {
+  left: 22vw;
+}
+#Zs {
+  left: 43vw;
+}
+#As {
+  left: 64vw;
+}
+
+
+.drobtn{
+  position: absolute;
+  top: 12vh;
+  height: 9vmin;
+  width: 8.5vw;
+  font-size: min(6vh, 3vw);
+  background-color: lightgrey;
+  color: black;
+  border: none;
+  opacity: 60%;
+}
+.drobtn:hover{
+  opacity: 100;
+  border: none;
+  /* background-color: transparent; */
+  /* color: lightgrey; */
+  /* border: 0.5vh solid lightgrey; */
+}
+#x0{
+  left: 1vw;
+  background-color:peachpuff;
+}
+#y0{
+  left: 22vw;
+  background-color: powderblue;
+}
+#z0{
+  left: 43vw;
+  background-color: khaki;
+}
+#a0{
+  left: 64vw;
+  background-color: tan;
+}
+#gox0{
+  left: 10.5vw;
+  background-color: peachpuff;
+}
+#goy0{
+  left: 31.5vw;
+  background-color: powderblue;
+}
+#goz0{
+  left: 52.5vw;
+  background-color: khaki;
+}
+#goa0{
+  left: 73.5vw;
+  background-color: tan;
+}
+
+#labelFeed{
+  position: absolute;
+  left: 1vw;
+  bottom: 1vh;
+  color: whitesmoke;
+  opacity: 50%;
+  height: 6vh;
+  line-height: 6vh;
+  font-size: min(5vh, 2.5vw);
+}
+#Feed {
+  position: absolute;
+  left: 8vw;
+  bottom: 1vh;
+  height: 6vh;
+  width: 11vw;
+  background-color: black;
+  font-size: min(6vh, 3vw);
+  color: whitesmoke;
+  text-align: right;
+  border: none;
+}
+
+#labelRpm{
+  position: absolute;
+  left: 23vw;
+  bottom: 1vh;
+  color: orange;
+  opacity: 50%;
+  height: 6vh;
+  line-height: 6vh;
+  font-size: min(5vh, 2.5vw);
+}
+#Rpm {
+  position: absolute;
+  left: 30vw;
+  bottom: 1vh;
+  height: 6vh;
+  width: 11vw;
+  background-color: transparent;
+  font-size: min(6vh, 3vw);
+  color: orange;
+  text-align: right;
+  border: none;
+}
+
+#labelFile{
+  position: absolute;
+  left: 45vw;
+  bottom: 1vh;
+  color: grey;
+  height: 6vh;
+  line-height: 6vh;
+  font-size: min(5vh, 2.5vw);
+}
+#fileName {
+  position: absolute;
+  left: 51vw;
+  bottom: 1vh;
+  height: 6vh;
+  width: 37vw;
+  background-color: transparent;
+  font-size: min(5vh, 2.5vw);
+  color: lightgrey;
+  text-align: left;
+  border: none;
+}
+#fileProgress {
+  position: absolute;
+  right: 1vw;
+  bottom: 1vh;
+  height: 6vh;
+  width: 10vw;
+  background-color: transparent;
+  font-size: min(5vh, 2.5vw);
+  color: aqua;
+  text-align: right;
+  border: none;
+}
+
+#state {
+  position: absolute;
+  right: 1vw;
+  top: 1vh;
+  height: 8vh;
+  width: 18vw;
+  background-color: transparent;
+  font-size: min(6vh, 3vw);
+  font-weight: bold;
+  text-align: right;
+  color: lightgray;
+  border: none;
+  outline: none;
+  text-transform: uppercase;
+}
+
+#woffset {
+  position: absolute;
+  right: 1vw;
+  top: 15vh;
+  height: 8vh;
+  width: 10vw;
+  background-color: transparent;
+  font-size: min(6vh, 3vw);
+  text-align: right;
+  color: lightgray;
+  border: none;
+  outline: none;
+  text-transform: uppercase;
+}
+
+button {
+  background-color: darkblue;
+  border: none;
+  border-radius: 2vmin;
+  color: lightgrey;
+  font-size: min(5vh, 2.5vw);
+  min-width: 8vw;
+  height: 10vmin;
+}
+button:hover{
+  background-color: transparent;
+  border: 0.5vh solid darkblue;
+  color: darkblue;
+}
+
+.ovbtn {
+  position: absolute;
+  background-color:rgb(70, 70, 70);
+  color: whitesmoke;
+  font-size: min(5vh, 2.5vw);
+  height: 10vmin;
+  width: 8vw;
+  margin-right: 0.7vw;
+  margin-bottom: 3vh;
+  /* z-index: 2; */
+}
+.ovvalue {
+  position: absolute;
+  background-color: rgb(70, 70, 70);
+  color: orange;
+  font-size: min(6vh, 3vw);
+  text-align: center;
+  line-height: 10vmin;
+  height: 10vmin;
+  width: 8vw;
+  margin-right: 0.7vw;
+  margin-bottom: 3vh;
+  border-radius: 2vmin;
+  outline: none;
+  border: hidden;
+  cursor: pointer;
+  caret-color: transparent;
+  /* z-index: 2; */
+}
+
+#fovm {
+  left: 42vw;
+  top: 2vh;
+}
+#fovr {
+  left: 51vw;
+  top: 2vh;
+}
+#fovp {
+  left: 60vw;
+  top: 2vh;
+}
+#sovm {
+  left: 42vw;
+  top: 16vh;
+}
+#sovr {
+  left: 51vw;
+  top: 16vh;
+}
+#sovp {
+  left: 60vw;
+  top: 16vh;
+}
+#rov25 {
+  left: 42vw;
+  top: 30vh;
+}
+#rov50 {
+  left: 51vw;
+  top: 30vh;
+}
+#rov100 {
+  left: 60vw;
+  top: 30vh;
+}
+
+
+#ym{
+  position: absolute;
+  top: 2vh;
+  left: 10vw;
+}
+#yp{
+  position: absolute;
+  top: 30vh;
+  left: 10vw;
+}
+#xm{
+  position: absolute;
+  top: 16vh;
+  left: 2vw;
+}
+#xp{
+  position: absolute;
+  top: 16vh;
+  left: 18vw;
+}
+#zp{
+  position: absolute;
+  top: 2vh;
+  left: 29vw;
+}
+#zm{
+  position: absolute;
+  top: 30vh;
+  left: 29vw;
+}
+#ap{
+  position: absolute;
+  top: 2vh;
+  left: 40vw;
+}
+#am{
+  position: absolute;
+  top: 30vh;
+  left: 40vw;
+}
+#bp{
+  position: absolute;
+  top: 2vh;
+  left: 51vw;
+}
+#bm{
+  position: absolute;
+  top: 30vh;
+  left: 51vw;
+}
+
+#mdi1 {
+  position: absolute;
+  bottom: 20vh;
+  left: 2vw;
+  width: 26vw;
+  height: 7vmin;
+  border: 0.5vmin solid orange;
+  border-radius: 2vmin;
+  font-size: 4vmin;
+  outline: none;
+  background-color: transparent;
+  color: darkblue;
+  text-align: right;
+  text-transform: uppercase;
+}
+#mdi1:focus {
+  border-color: darkblue;
+  box-shadow: 0 0 3vmin;
+  background-color: whitesmoke;
+}
+
+#mdi1btn {
+  position: absolute;
+  bottom: 20vh;
+  left: 29vw;
+  height: 7vmin;
+  width: 8vw;
+  font-size: min(5.5vh, 2.75vw);
+}
+
+#mdi2 {
+  position: absolute;
+  bottom: 12vh;
+  left: 2vw;
+  width: 26vw;
+  height: 7vmin;
+  border: 0.5vmin solid orange;
+  border-radius: 2vmin;
+  font-size: 4vmin;
+  outline: none;
+  background-color: transparent;
+  color: darkblue;
+  text-align: right;
+  text-transform: uppercase;
+
+}
+#mdi2:focus {
+  border-color: darkblue;
+  box-shadow: 0 0 3vmin;
+  background-color: whitesmoke;
+}
+
+#mdi2btn {
+  position: absolute;
+  bottom: 12vh;
+  left: 29vw;
+  height: 7vmin;
+  width: 8vw;
+  font-size: min(5.5vh, 2.75vw);
+}
+.cmdbtn {
+  position: absolute;
+  width: 12vw;
+  height: 10vmin;
+  font-size: min(6vh, 3vw);
+  z-index: 2;
+}
+#reset{
+  top: 32vh;
+  right: 2vw;
+}
+#unlock{
+  top: 46vh;
+  right: 2vw;
+}
+#home {
+  top: 60vh;
+  right: 2vw;
+}
+#start {
+  top: 32vh;
+  right: 15vw;
+}
+#hold {
+  top: 46vh;
+  right: 15vw;
+}
+#probe {
+  top: 60vh;
+  right: 15vw;
+}
+
+.radio-toolbar input[type="radio"] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+#radio-buttons {
+  position: absolute;
+  bottom: 0vh;
+}
+.radio-toolbar > label {
+    position:absolute;
+    bottom: 0;
+    display: block;
+    line-height: 8vmin;
+    color: darkblue;
+    font-size: min(6vh, 3vw);
+    text-align: center;
+    height: 8vmin;
+    border: 0.5vmin solid darkblue;
+    border-bottom: none;
+    border-radius: 2vh 2vh 0 0;
+}
+#l0 {
+  left: 2vw;
+  width: 8vw;
+}
+#l1 {
+  left: 11vw;
+  width: 6vw;
+}
+#l2 {
+  left: 18vw;
+  width: 6vw;
+}
+#l3 {
+  left: 25vw;
+  width: 6vw;
+}
+#l4 {
+  left: 32vw;
+  width: 6vw;
+}
+#l5 {
+  left: 39vw;
+  width: 6vw;
+}
+.radio-toolbar label:hover {
+  background-color: darkblue;
+  color: white;
+}
+
+.radio-toolbar input[type="radio"]:checked + label {
+    background-color: darkblue;
+    color: whitesmoke;
+}
+table {
+  width: 38vw;
+  border-spacing: 1vh;
+  z-index: 2;
+}
+#tablediv {
+  position: absolute;
+  left: 1vw;
+  top: 1vh;
+  height: 67vh;
+  width: 38vw;
+  overflow: scroll;
+  /* touch-action: unset; */
+}
+td {
+  border-radius: 1vmin;
+  padding: 2vmin 0.5vmin;
+  cursor: pointer;
+  font-size: min(4vh, 2vw);
+  font-weight: bold;
+  text-align: right;
+}
+tr {
+  background-color: lightseagreen;
+}
+th {
+  /* padding: 1vmin 0; */
+  background-color: darkblue;
+  border-radius: 1vmin;
+  font-size: min(4vh, 2vw);
+  padding: 1vmin;
+  color: whitesmoke;
+}
+.selected {
+  color: whitesmoke;
+  background-color:darkgreen;
+}
+#reloadfiles {
+/* margin-left: 15vw; */
+width: 37vw;
+margin-left: 0.5vw;
+margin-top: 2vh;
+}
