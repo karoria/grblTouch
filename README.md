@@ -10,3 +10,12 @@ A webUI is not a "sender" software. It runs a gcode file from SD card only. For 
 A raspberry pi 4 (recommended) with 7 inch display and combo case should be ideal for grblTouch. For MDI entries, user may require keyboard on raspberry pi and similar OS.
 
 grblTouch also facilitates keyboard shortcuts. diagram or description to be added soon.
+
+Jog Tab Screenshot:
+![Jog Tab](https://user-images.githubusercontent.com/45288223/152221602-fb87cd04-639c-4972-8a08-92cd418d9057.png)
+
+Run Tab Screenshot:
+![Run Tab](https://user-images.githubusercontent.com/45288223/152221661-baeea68e-796f-4ade-b774-9b0e367e331f.png)
+
+Running a program from SD screenshot:
+![Running a program](https://user-images.githubusercontent.com/45288223/152221683-4a36266c-6830-4358-9d16-5965295ccadf.png)
