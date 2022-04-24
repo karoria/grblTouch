@@ -98,9 +98,7 @@ function onLoad() {
 function onOpen(evt) {
     websocket.send('$I\n');
     websocket.send('$G\n');
-    if (!evt) {
-        document.getElementById('state').innerHTML = 'DISCONNECTED';
-    }
+
     setInterval(function () {
         websocket.send('?');
     }, pollInterval);
@@ -308,6 +306,10 @@ function onClose(evt) {
     console.log('WebSockets Not connected');
     document.getElementById('state').innerHTML = 'DISCONNECTED';
 }
+window.addEventListener("unload", function () { //this code is for checking if ws connection is active at browser close/refresh event. If active, it closes ws gracefully. However, it doesn't seem to work.
+    if(websocket.readyState == WebSocket.OPEN)
+        websocket.close();
+});
 
 function onMessage(evt) {
 
