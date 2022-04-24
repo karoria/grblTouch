@@ -18,17 +18,18 @@
 
 
 //section for user customization
-const serverUrl = '192.168.1.77'; //change according to ip of grbl controller/server. static IP configuration is strongly recommended.
 const wsPort = 81;      //websockets port. default 81
 var jogDistanceArray = [0.002, 0.01, 0.1, 1, 5, 25]; //distances are in mm. please don't change this unless you find out its relevance at other places in code
 var pollInterval = 150; //use 300-500 for wifi based communication, 150 for wired ethernet
 const probethickness = 15.00; // height of Z-probe plate
 var jogSpeed = 3000; //in mm/min. this speed is applicable while jogging
-var positionSpeed = 6000; //in mm/min. this speed is applicable while directly going to X0, Y0, Z0, etc.
+var positionSpeed = 3000; //in mm/min. this speed is applicable while directly going to X0, Y0, Z0, etc.
 //Be cautious to use Y- and Y+ jog buttons as they are reversed to suit "valay" mini VMC machines which is used for testing this code.
 
 //Following code is not for user customization in general
 //main code
+const serverUrl = document.location.host;
+
 var toggleFullScreen = function () {
     if (document.fullscreenElement) {
         document.exitFullscreen();
@@ -36,89 +37,45 @@ var toggleFullScreen = function () {
         document.documentElement.requestFullscreen();
     }
 };
-var jogDistanceIndex, selectedFile, fileJson, fileInfo, mcx, mcy, mcz, mca, wcx, wcy, wcz, wca, wcox, wcoy, wcoz, wcoa;
+var jogDistanceIndex, selectedFile, fileJson, fileInfo, mcx, mcy, mcz, mca, wcx, wcy, wcz, wca, wcox, wcoy, wcoz, wcoa, timer;
 document.writeln("<script type='text/javascript' src='code.js'></script>"); //to link with other js file
+document.writeln("<script type='text/javascript' src='files.js'></script>");
 
 function openTab(evt, tabName) {
     // Declare all variables
     var i, tabcontent, tablinks;
 
     // Get all elements with class="tabcontent" and hide them
-    tabcontent = document.getElementsByClassName("tabcontent");
+    tabcontent = document.getElementsByClassName('tabcontent');
     for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.visibility = "hidden";
+        tabcontent[i].style.visibility = 'hidden';
     }
 
     // Get all elements with class="tablinks" and remove the class "active"
-    tablinks = document.getElementsByClassName("tablinks");
+    tablinks = document.getElementsByClassName('tablinks');
     for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
+        tablinks[i].className = tablinks[i].className.replace(' active', '');
     }
 
     // Show the current tab, and add an "active" class to the link that opened the tab
-    document.getElementById(tabName).style.visibility = "visible";
-    evt.currentTarget.className += " active";
+    document.getElementById(tabName).style.visibility = 'visible';
+    evt.currentTarget.className += ' active';
 }
 document.getElementById('jogbtn').click(); //initial click on 'jog' tab to highlight it
+document.getElementById('ln').innerHTML = localStorage.getItem('ln', ln); //show last running line number
+document.getElementById('fileName').innerHTML = localStorage.getItem('fileName', fileName);
+document.getElementById('elapsedTime').innerHTML = localStorage.getItem('timer', timer);
 
-var fileUrl = new URL('http://' + serverUrl + '/upload');
-
-function reloadlist() {
-    fetch(fileUrl).then(function (response) {
-        return response.text();
-    }).then(function (text) {
-        fileJson = text;
-        return fileJson;
-    });
-    setTimeout(function () {
-        fileStr = JSON.parse(fileJson);
-        var k = '<tbody>'
-        for (i = 0; i < fileStr.files.length; i++) {
-            k += '<tr>';
-            k += '<td>' + fileStr.files[i].name + '</td>';
-            k += '<td>' + fileStr.files[i].size + '</td>';
-            k += '</tr>';
-        }
-        k += '</tbody>';
-        document.getElementById('tabledata').innerHTML = k;
-
-        function highlightRow() {
-            var table = document.getElementById('tabledata');
-            var cells = table.getElementsByTagName('td');
-            for (var i = 0; i < cells.length; i++) {
-                // Take each cell
-                var cell = cells[i];
-                // do something on onclick event for cell
-                cell.onclick = function () {
-                    // Get the row id where the cell exists
-                    var rowId = this.parentNode.rowIndex - 1;
-                    var rowsNotSelected = table.getElementsByTagName('tr');
-                    for (var row = 0; row < rowsNotSelected.length; row++) {
-                        rowsNotSelected[row].classList.remove('selected');
-                    }
-                    var rowSelected = table.getElementsByTagName('tr')[rowId];
-                    rowSelected.className += 'selected';
-                    //document.getElementsByClassName('selected').style.backgroundColor = "green";
-                    selectedFile = rowSelected.cells[0].innerHTML;
-                    writeConsole(selectedFile + " is selected. Please check IDLE state before starting.");
-                    //document.getElementById('start').style.backgroundColor = "green";
-                }
-            }
-        }
-        highlightRow();
-    }, 500);
-}
-reloadlist();
 
 if (window.WebSocket === undefined) {
-    console.log("sockets not supported");
+    console.log('sockets not supported');
 } else {
-    if (typeof String.prototype.startsWith != "function") {
+    if (typeof String.prototype.startsWith != 'function') {
         String.prototype.startsWith = function (str) {
             return this.indexOf(str) == 0;
         };
     }
-    window.addEventListener("load", onLoad, false);
+    window.addEventListener('load', onLoad, false);
 }
 
 function writeConsole(cData) {
@@ -131,15 +88,19 @@ function writeConsole(cData) {
 var wsUri = 'ws://' + serverUrl + ':' + wsPort;
 function onLoad() {
     websocket = new WebSocket(wsUri);
+
     websocket.onopen = function (evt) { onOpen(evt) };
-    websocket.onclose = function (evt) { onClose(evt) };
+    websocket.onClose = function (evt) { onClose(evt) };
     websocket.onmessage = function (evt) { onMessage(evt) };
     websocket.onerror = function (evt) { onError(evt) };
 }
 
 function onOpen(evt) {
-    //websocket.send('$I\n');
-    //websocket.send('$G\n');
+    websocket.send('$I\n');
+    websocket.send('$G\n');
+    if (!evt) {
+        document.getElementById('state').innerHTML = 'DISCONNECTED';
+    }
     setInterval(function () {
         websocket.send('?');
     }, pollInterval);
@@ -167,43 +128,33 @@ function onOpen(evt) {
     document.getElementById('jd3').click(); //initial click on button "1" as default jog distance
 
     window.Yp = function () {
-        //console.log('$J=G91Y' + currentJogDistance + 'F3000');
         websocket.send('$J=G91Y' + currentJogDistance + 'F' + jogSpeed + '\n');
     }
     window.Ym = function () {
-        //console.log('$J=G91Y-' + currentJogDistance + 'F3000');
         websocket.send('$J=G91Y-' + currentJogDistance + 'F' + jogSpeed + '\n');
     }
     window.Xp = function () {
-        // console.log('$J=G91X' + currentJogDistance + 'F3000');
         websocket.send('$J=G91X' + currentJogDistance + 'F' + jogSpeed + '\n');
     }
     window.Xm = function () {
-        // console.log('$J=G91X-' + currentJogDistance + '3000');
         websocket.send('$J=G91X-' + currentJogDistance + 'F' + jogSpeed + '\n');
     }
     window.Zp = function () {
-        // console.log('$J=G91Z' + currentJogDistance + 'F3000');
         websocket.send('$J=G91Z' + currentJogDistance + 'F' + jogSpeed + '\n');
     }
     window.Zm = function () {
-        // console.log('$J=G91Z-' + currentJogDistance + 'F3000');
         websocket.send('$J=G91Z-' + currentJogDistance + 'F' + jogSpeed + '\n');
     }
     window.Ap = function () {
-        // console.log('$J=G91Z' + currentJogDistance + 'F3000');
         websocket.send('$J=G91A' + currentJogDistance + 'F' + jogSpeed + '\n');
     }
     window.Am = function () {
-        // console.log('$J=G91Z-' + currentJogDistance + 'F3000');
         websocket.send('$J=G91A-' + currentJogDistance + 'F' + jogSpeed + '\n');
     }
     window.Bp = function () {
-        // console.log('$J=G91Z' + currentJogDistance + 'F3000');
         websocket.send('$J=G91B' + currentJogDistance + 'F' + jogSpeed + '\n');
     }
     window.Bm = function () {
-        // console.log('$J=G91Z-' + currentJogDistance + 'F3000');
         websocket.send('$J=G91B-' + currentJogDistance + 'F' + jogSpeed + '\n');
     }
     window.jogCancel = function () {
@@ -237,6 +188,7 @@ function onOpen(evt) {
     window.sovp = function () {
         websocket.send('\x9A');
     }
+
     window.mdi1 = function () {
         var mdi1 = document.getElementById('mdi1').value;
         localStorage.setItem('mymdi1', mdi1); //code for making text input persistant
@@ -251,16 +203,19 @@ function onOpen(evt) {
     }
 
     window.x0 = function () {
-        websocket.send('G10 P0 L20 X0\n');
+        websocket.send('G10P0L20X0\n');
     }
     window.y0 = function () {
-        websocket.send('G10 P0 L20 Y0\n');
+        websocket.send('G10P0L20Y0\n');
     }
     window.z0 = function () {
-        websocket.send('G10 P0 L20 Z0\n');
+        websocket.send('G10P0L20Z0\n');
     }
     window.a0 = function () {
-        websocket.send('G10 P0 L20 A0\n');
+        websocket.send('G10P0L20A0\n');
+    }
+    window.b0 = function () {
+        websocket.send('G10P0L20B0\n');
     }
     window.gox0 = function () {
         websocket.send('$J=G90X0F' + positionSpeed + '\n');
@@ -274,14 +229,17 @@ function onOpen(evt) {
     window.goa0 = function () {
         websocket.send('$J=G90A0F' + positionSpeed + '\n');
     }
+    window.gob0 = function () {
+        websocket.send('$J=G90B0F' + positionSpeed + '\n');
+    }
 
-    // window.requestOffset = function () {
-    //     websocket.send('$G\n');
-    // }
     window.reset = function () {
         // console.log('Reset sent');
-        websocket.send('\030\n');
-        websocket.send('$G\n'); //when reset, grbl sets G54. without timeout it malfunctions
+        websocket.send('\030'); //for reset
+        websocket.send('\x87'); //for requesting complete report to set the accessories state right
+        //websocket.send('\x19'); //for stop. not as harsh as reset. grblHAL feature. Spindle doesn't stop. Builds after January '22 resolves spindle issue.
+        timePause();
+        websocket.send('$G\n');
     }
 
     window.unlock = function () {
@@ -305,24 +263,34 @@ function onOpen(evt) {
     }
 
     window.start = function () {
-        if ((document.getElementById('state').innerHTML) == "Hold:0") {
+        if ((document.getElementById('state').innerHTML) == 'Hold:0') {
             websocket.send('~');
+            timeStart();
             writeConsole('Program resumed.')
         }
-        else if ((document.getElementById('state').innerHTML) == "Idle") {
-            var runFile = websocket.send('$F=/' + selectedFile + '\n');
+        else if ((document.getElementById('state').innerHTML) == 'Idle') {
+            websocket.send('$F=/' + selectedFile + '\n');
+
             setTimeout(function () {
-                if ((document.getElementById('state').innerHTML) == "Run") {
-                    writeConsole('Program started from file: ' + selectedFile);
+                if ((document.getElementById('state').innerHTML) == 'Run') {
+                    timeReset();
+                    timeStart();
+                    document.getElementById('ln').innerHTML = "";
+                    writeConsole('Started: ' + selectedFile);
                 }
-            }, 300);
+            }, pollInterval);
         }
     }
 
     window.pause = function () {
         websocket.send('!')
-        //document.getElementById('start').style.backgroundColor = "green";
-        writeConsole('Program on feedhold. Press start to resume');
+        timePause();
+        writeConsole('Feedhold. Press start to resume');
+    }
+
+    window.stop = function () {
+        websocket.send('\x19'); //for stop. not as harsh as reset. grblHAL feature.
+        timePause();
     }
 
     window.probe = function () {
@@ -337,23 +305,23 @@ function onOpen(evt) {
 }
 
 function onClose(evt) {
-    console.log("WebSockets Not connected");
+    console.log('WebSockets Not connected');
+    document.getElementById('state').innerHTML = 'DISCONNECTED';
 }
-// function safe_tags(str) {
-//     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-// }
+
 function onMessage(evt) {
-    console.log(evt.data);
+
+    // console.log(evt.data);
     if (evt.data[0] == '<') { //These are realtime status reports
         //Code for getting status and modify its style dynamically
-        var splitString = evt.data.split("|");
+        var splitString = evt.data.split('|');
         var state = splitString[0]; //select first element of array
         state = state.substring(1); //remove initial '<' from machine state string
         document.getElementById('state').innerHTML = state;
         switch (state) {
             case 'Idle':
                 document.getElementById('state').style.color = 'lightgreen';
-                document.getElementById('console').style.color = 'rgb(70,70,70)';
+                document.getElementById('console').style.color = 'rgb(50, 50, 50)';
                 break;
             case 'Alarm':
                 document.getElementById('console').style.color = 'maroon';
@@ -400,24 +368,24 @@ function onMessage(evt) {
                 mca = parseFloat(mpos[3]);
                 //console.log(mca);
             }
-            document.getElementById("Xs").value = mcx.toFixed(3);
-            document.getElementById("Ys").value = mcy.toFixed(3);
-            document.getElementById("Zs").value = mcz.toFixed(3);
+            document.getElementById('Xs').value = mcx.toFixed(3);
+            document.getElementById('Ys').value = mcy.toFixed(3);
+            document.getElementById('Zs').value = mcz.toFixed(3);
             if (mca || mca == 0) {
-                document.getElementById("As").value = mca.toFixed(3);
+                document.getElementById('As').value = mca.toFixed(3);
             }
             wcx = mcx - wcox;
             wcy = mcy - wcoy;
             wcz = mcz - wcoz;
             wca = mca - wcoa;
             if (wcx || wcx == 0)
-                document.getElementById("Xw").value = wcx.toFixed(3);
+                document.getElementById('Xw').value = wcx.toFixed(3);
             if (wcy || wcy == 0)
-                document.getElementById("Yw").value = wcy.toFixed(3);
+                document.getElementById('Yw').value = wcy.toFixed(3);
             if (wcz || wcz == 0)
-                document.getElementById("Zw").value = wcz.toFixed(3);
+                document.getElementById('Zw').value = wcz.toFixed(3);
             if (wca || wca == 0)
-                document.getElementById("Aw").value = wca.toFixed(3);
+                document.getElementById('Aw').value = wca.toFixed(3);
         }
 
         var indexfs = splitString.findIndex(element => element.includes('FS:'));
@@ -427,8 +395,8 @@ function onMessage(evt) {
             fs = fs.split(',');
             var feed = parseInt(fs[0]);
             var rpm = parseInt(fs[1]);
-            document.getElementById("Feed").value = feed;
-            document.getElementById("Rpm").value = rpm;
+            document.getElementById('Feed').innerHTML = feed;
+            document.getElementById('Rpm').innerHTML = rpm;
         }
 
         var indexwcs = splitString.findIndex(element => element.includes('WCS:'));
@@ -450,17 +418,23 @@ function onMessage(evt) {
             var spindleov = parseFloat(ov[2]);
             document.getElementById('fovr').innerHTML = (feedov + '%');
             if (feedov != 100) {
-                document.getElementById('fovr').style.backgroundColor = 'black';
+                document.getElementById('fovr').style.backgroundColor = 'orange';
+                document.getElementById('fovr').style.color = 'rgb(50, 50, 50)';
+
             }
             else {
-                document.getElementById('fovr').style.backgroundColor = 'rgb(70,70,70)';
+                document.getElementById('fovr').style.backgroundColor = 'rgb(50, 50, 50)';
+                document.getElementById('fovr').style.color = 'orange';
+
             };
-            document.getElementById("sovr").innerHTML = (spindleov + '%');
+            document.getElementById('sovr').innerHTML = (spindleov + '%');
             if (spindleov != 100) {
-                document.getElementById('sovr').style.backgroundColor = 'black';
+                document.getElementById('sovr').style.backgroundColor = 'orange';
+                document.getElementById('sovr').style.color = 'rgb(50, 50, 50)';
             }
             else {
-                document.getElementById('sovr').style.backgroundColor = 'rgb(70,70,70)';
+                document.getElementById('sovr').style.backgroundColor = 'rgb(50, 50, 50)';
+                document.getElementById('sovr').style.color = 'orange';
             };
             if (rapidov == 25) {
                 document.getElementById('rov25').style.color = 'orange';
@@ -479,12 +453,51 @@ function onMessage(evt) {
             }
         }
 
+        var indexln = splitString.findIndex(element => element.includes('Ln:'));
+        var ln = splitString[indexln];
+        if (ln) {
+            ln = ln.substring(3);
+            ln = ln.replace('>', ''); //remove last ">" which may arraive randomly
+            document.getElementById('ln').innerHTML = ln;
+            localStorage.setItem('ln', ln);
+        }
+
         var indexpn = splitString.findIndex(element => element.includes('Pn:'));
         var pn = splitString[indexpn];
         if (pn) {
-            pn = pn.substring(3);
-            pn = pn.replace('>', ''); //remove last ">" which may arraive randomly
-            // io.sockets.emit('pn', pn);
+            var pn = pn.substring(3);
+            var pn = pn.replace('>', ''); //remove last ">" which may arraive randomly
+            var pr = pn.includes('P');
+            var xl = pn.includes('X');
+            var yl = pn.includes('Y');
+            var zl = pn.includes('Z');
+            var door = pn.includes('D');
+            var driveAl = pn.includes('M');
+            var eStop = pn.includes('E');
+            if (pr) { document.getElementById('pr').style.background = 'orange'; }
+            else { document.getElementById('pr').style.background = 'grey'; }
+            if (xl) { document.getElementById('xl').style.background = 'orange'; }
+            else { document.getElementById('xl').style.background = 'grey'; }
+            if (yl) { document.getElementById('yl').style.background = 'orange'; }
+            else { document.getElementById('yl').style.background = 'grey'; }
+            if (zl) { document.getElementById('zl').style.background = 'orange'; }
+            else { document.getElementById('zl').style.background = 'grey'; }
+            if (door) { document.getElementById('door').style.background = 'orange'; }
+            else { document.getElementById('door').style.background = 'grey'; }
+            if (driveAl) { document.getElementById('driveAl').style.background = 'orange'; }
+            else { document.getElementById('driveAl').style.background = 'grey'; }
+            if (eStop) { document.getElementById('eStop').style.background = 'orange'; }
+            else { document.getElementById('eStop').style.background = 'grey'; }
+            
+        }
+        else {
+            document.getElementById('pr').style.background = 'grey';
+            document.getElementById('xl').style.background = 'grey';
+            document.getElementById('yl').style.background = 'grey';
+            document.getElementById('zl').style.background = 'grey';
+            document.getElementById('door').style.background = 'grey';
+            document.getElementById('driveAl').style.background = 'grey';
+            document.getElementById('eStop').style.background = 'grey';
         }
 
         var indexa = splitString.findIndex(element => element.includes('A:'));
@@ -492,6 +505,12 @@ function onMessage(evt) {
         if (a) {
             a = a.substring(2);
             a = a.replace('>', ''); //remove last ">"
+            var sp = a.includes('S');
+            var coolant = a.includes('M') || a.includes('F');
+            if (sp) { document.getElementById('sp').style.background = 'orange'; }
+            else { document.getElementById('sp').style.background = 'grey'; }
+            if (coolant) { document.getElementById('clnt').style.background = 'orange'; }
+            else { document.getElementById('clnt').style.background = 'grey'; }
         }
 
         var indexsd = splitString.findIndex(element => element.includes('SD:'));
@@ -505,17 +524,17 @@ function onMessage(evt) {
             var fileProgress = parseFloat(sd[0]).toFixed(1);
             var fileName = sd[1];
             localStorage.setItem('fileName', fileName); //code for making text input persistant
-            document.getElementById("fileName").value = fileName;
-            if ((document.getElementById('state').innerHTML) == "Run" || "Hold:0") {
-                document.getElementById("fileProgress").value = (fileProgress + "%");
-                document.getElementById("fileName").style.color = "cyan";
+            document.getElementById('fileName').innerHTML = fileName;
+            if ((document.getElementById('state').innerHTML) == 'Run' || 'Hold:0') {
+                document.getElementById('fileProgress').innerHTML = (fileProgress + '%');
+                document.getElementById('fileName').style.color = 'cyan';
+                document.getElementById('fileProgress').style.color = 'cyan';
             }
             else {
-                document.getElementById("fileProgress").value = ("");
-                document.getElementById("fileName").style.color = "lightgrey";
+                document.getElementById('fileProgress').innerHTML = '';
+                document.getElementById('fileName').style.color = 'lightgrey';
 
             }
-            // io.sockets.emit('sd', sd);
         }
 
     }
@@ -524,7 +543,7 @@ function onMessage(evt) {
         alarmNum = alarmNum[1];
         alarmNum = Number(alarmNum);
         var alarmDetail = alarmCodes[alarmNum];
-        var alarmData = ("ALARM " + alarmNum + ': ' + alarmDetail);
+        var alarmData = ('ALARM ' + alarmNum + ': ' + alarmDetail);
         writeConsole(alarmData);
     }
     else if (evt.data.includes('error:')) {
@@ -536,9 +555,12 @@ function onMessage(evt) {
             errorNum = errorNum[1];
             errorNum = Number(errorNum);
             var errorDetail = errorCodes[errorNum];
-            var errorData = ("Error " + errorNum + ': ' + errorDetail);
+            var errorData = ('Error ' + errorNum + ': ' + errorDetail);
         }
         writeConsole(errorData);
+    }
+    else if (evt.data.includes('$') == true) {
+        writeConsole(evt.data);
     }
     else if (evt.data.startsWith('[GC:') == true) {
         var gcStr = evt.data.split(' '); //split by multiple delimiters using RegExp
@@ -546,9 +568,23 @@ function onMessage(evt) {
         wOffset = gcStr[1];
         document.getElementById('woffset').innerHTML = wOffset;
     }
+    else if (evt.data.startsWith('[FILE:') == true) {
+        console.log(evt.data);
+        var fileArray = evt.data.split(/\r\n/);
+        // fileArray = fileArray.replace('[FILE:', '');
+        // fileArray = fileArray.replace('SIZE:', '');
+        console.log(fileArray);
+    }
+    else if (evt.data.includes('Pgm End' || 'Program End') == true) {
+        document.getElementById('fileProgress').innerHTML = ('100%');   //last reporting from controller is not 100% in most cases
+        document.getElementById('fileName').style.color = 'lightgrey';
+        document.getElementById('fileProgress').style.color = 'lightgrey';
+        writeConsole('Program completed successfully.');
+        timePause();
+    }
     else if (evt.data[0] == '[') {
-        var consoleData = evt.data;
-        var splitMessage = evt.data.split(":");
+        writeConsole(evt.data);
+        var splitMessage = evt.data.split(':');
         var messageType = splitMessage[0]; //select first element of array
         messageType = messageType.substring(1); //remove initial '[' from string
     }
@@ -561,7 +597,7 @@ function onMessage(evt) {
 }
 
 function onError(evt) {
-    console.log("WebSocket Communication error" + evt);
+    console.log('WebSocket Communication error' + evt);
 }
 
 //code for keyboard shortcuts
@@ -577,169 +613,220 @@ inputBlurred = function () {
 }
 
 var a;
-if (localStorage.getItem("a")){
-    a = parseFloat(localStorage.getItem("a"));
+if (localStorage.getItem('a')) {
+    a = parseFloat(localStorage.getItem('a'));
 } else {
     a = 0;
 }
-document.getElementById('brightness').style.backgroundColor = "rgba(0, 0, 0, " + a + ")";
+document.getElementById('brightness').style.backgroundColor = 'rgba(0, 0, 0, ' + a + ')';
 
 
 function increaseBrightness() {
     if (a > 0.1) {
         a = a - 0.1;
     }
-    document.getElementById('brightness').style.backgroundColor = "rgba(0, 0, 0, " + a + ")";
-    localStorage.setItem("a", a);
+    document.getElementById('brightness').style.backgroundColor = 'rgba(0, 0, 0, ' + a + ')';
+    localStorage.setItem('a', a);
     return a;
 }
 function decreaseBrightness() {
     if (a < 0.5) {
         a = a + 0.1;
     }
-    document.getElementById('brightness').style.backgroundColor = "rgba(0, 0, 0, " + a + ")";
-    localStorage.setItem("a", a);
+    document.getElementById('brightness').style.backgroundColor = 'rgba(0, 0, 0, ' + a + ')';
+    localStorage.setItem('a', a);
     return a;
 }
+var ctrlKey = false;
+var shiftKey = false;
+var altKey = false;
+var tabKey = false;
 
-function handleKeyDown(event) {
+function onKeyDown(event) {
     if (isInputFocused) {
         return;                     //if input is focussed, keyboard keys should be used for typing instead of assigned tasks
     }
     switch (event.key) {
-        case "ArrowRight":
+        case 'Control':
+            ctrlKey = true;
+            event.preventDefault();
+            break;
+        case 'Shift':
+            shiftKey = true;
+            event.preventDefault();
+            break;
+        case 'Alt':
+            altKey = true;
+            event.preventDefault();
+            break;
+        case 'Tab':
+            tabKey = true;
+            event.preventDefault();
+            break;
+        case 'ArrowRight':
             Xp();
             event.preventDefault(); //this prevents default functions of arrow key in browser
             break;
-        case "ArrowLeft":
+        case 'ArrowLeft':
             Xm();
             event.preventDefault();
             break;
-        case "ArrowUp":
+        case 'ArrowUp':
             Ym();
             event.preventDefault();
             break;
-        case "ArrowDown":
+        case 'ArrowDown':
             Yp();
             event.preventDefault();
             break;
-        case "PageUp":
+        case 'PageUp':
             Zp();
             event.preventDefault();
             break;
-        case "PageDown":
+        case 'PageDown':
             Zm();
             event.preventDefault();
             break;
-        case "F8":
+        case ']':
+            Ap();
+            event.preventDefault();
+            break;
+        case '[':
+            Am();
+            event.preventDefault();
+            break;
+        case 'F8':
             coolant();
             event.preventDefault();
             break;
-        case "F9":
+        case 'F9':
             spindle();
             event.preventDefault();
             break;
-        case "F10":
+        case 'F10':
             websocket.send('M5 M9\n');
             event.preventDefault();
             break;
-        case "1":
+        case '1':
             document.getElementById('jd0').click();
             break;
-        case "2":
+        case '2':
             document.getElementById('jd1').click();
             break;
-        case "3":
+        case '3':
             document.getElementById('jd2').click();
             break;
-        case "4":
+        case '4':
             document.getElementById('jd3').click();
             break;
-        case "5":
+        case '5':
             document.getElementById('jd4').click();
             break;
-        case "6":
+        case '6':
             document.getElementById('jd5').click();
             break;
-        case "9":
+        case '9':
             start();
             break;
-        case "0":
+        case '0':
             pause();
             break;
-        case "Escape":
+        case 'Escape':
             jogCancel();
             event.preventDefault();
             break;
-        case "Pause":
+        case 'Pause':
             pause();
             break;
-        case "p":
+        case 'p':
             probe();
             break;
-        case "r":
+        case 'r':
             reset();
             break;
-        case "u":
+        case 'u':
             unlock();
             break;
-        case "h":
+        case 'h':
             home();
             break;
-        case "f":
+        case 'f':
             toggleFullScreen();
             break;
-        case "q":
+        case 'q':
             fovm();
             break;
-        case "w":
+        case 'w':
             fovr();
             break;
-        case "e":
+        case 'e':
             fovp();
             break;
-        case "a":
-            sovm();
+        case 'a':
+            if (tabKey == true) {
+                a0();
+            } else {
+                sovm();
+            }
             break;
-        case "s":
+        case 's':
             sovr();
             break;
-        case "d":
+        case 'd':
             sovp();
             break;
-        case "z":
-            rov25();
+        case 'x':
+            event.preventDefault();
+            if (tabKey == true) {
+                x0();
+            } else {
+                rov50();
+            }
             break;
-        case "x":
-            rov50();
-            break;
-        case "c":
+        case 'c':
             rov100();
             break;
-        case "F1":
+        case 'y':
+            if (tabKey == true) {
+                y0();
+            }
+            break;
+        case 'z':
+            if (tabKey == true) {
+                z0();
+            } else {
+                rov25();
+            }
+            break;
+        case 'b':
+            if (tabKey == true) {
+                b0();
+            }
+            break;
+        case 'F1':
             document.getElementById('jogbtn').click(); //Open Jog tab
             event.preventDefault();
             break;
-        case "F2":
+        case 'F2':
             document.getElementById('runbtn').click(); //Open Run tab
             event.preventDefault();
             break;
-        case "F3":
+        case 'F3':
             document.getElementById('settingsbtn').click(); //Open Settings tab
             event.preventDefault();
             break;
-        case "F6":
+        case 'F6':
             decreaseBrightness();
-            writeConsole("Screen brightness: " + Math.round((1 - a) * 100) + "%")
+            writeConsole('Screen brightness: ' + Math.round((1 - a) * 100) + '%')
             event.preventDefault();
             break;
-        case "F7":
+        case 'F7':
             increaseBrightness();
-            writeConsole("Screen brightness: " + Math.round((1 - a) * 100) + "%")
+            writeConsole('Screen brightness: ' + Math.round((1 - a) * 100) + '%')
             event.preventDefault();
             break;
-        case "=":
-        case "+":
+        case '=':
+        case '+':
             increaseJogDistance();
             event.preventDefault();
             break;
@@ -747,27 +834,77 @@ function handleKeyDown(event) {
             decreaseJogDistance();
             event.preventDefault();
             break;
-
         default:
             console.log(event);
     }
+    // if (ctrlKey && event.key === 'x'){
+    //     x0();
+    //     event.preventDefault();
+    // }
+    // if (event.ctrlKey && event.key === 'y'){
+    //     y0();
+    // }
 }
-function handleKeyUp(event) {
+function onKeyUp(event) {
     if (isInputFocused) {
         return;
     }
     switch (event.key) {
-        case "Shift":
-            shiftUp();
+        case 'Shift':
+            shiftKey = false;
             break;
-        case "Control":
-            ctrlDown = false;
+        case 'Control':
+            ctrlKey = false;
             break;
-        case "Alt":
-            altUp();
+        case 'Alt':
+            altKey = false;
+            break;
+        case 'Tab':
+            tabKey = false;
             break;
     }
 }
+window.addEventListener('keydown', onKeyDown);
+window.addEventListener('keyup', onKeyUp);
 
-window.addEventListener('keydown', handleKeyDown);
-window.addEventListener('keyup', handleKeyUp);
+// Convert time to a format of hours, minutes, seconds, and milliseconds
+
+function timeToString(time) {
+    let diffInHrs = time / 3600000;
+    let hh = Math.floor(diffInHrs).toString().padStart(2, "0");
+
+    let diffInMin = (diffInHrs - hh) * 60;
+    let mm = Math.floor(diffInMin).toString().padStart(2, "0");
+
+    let diffInSec = (diffInMin - mm) * 60;
+    let ss = Math.floor(diffInSec).toString().padStart(2, "0");
+
+    return `${hh}:${mm}:${ss}`;
+}
+
+let startTime;
+let elapsedTime = 0;
+let timerInterval;
+
+function print(txt) {
+    document.getElementById('elapsedTime').innerHTML = txt;
+}
+function timeStart() {
+    startTime = Date.now() - elapsedTime;
+    timerInterval = setInterval(function printTime() {
+        elapsedTime = Date.now() - startTime;
+        timer = timeToString(elapsedTime);
+        print(timer);
+        localStorage.setItem('timer', timer);
+    }, 10);
+}
+function timePause() {
+    clearInterval(timerInterval);
+}
+function timeReset() {
+    clearInterval(timerInterval);
+    print("00:00:00");
+    elapsedTime = 0;
+}
+
+document.writeln("<script type='text/javascript' src='numpad.js'></script>");

@@ -55,8 +55,18 @@ const errorCodes = {
   37: "The G43.1 dynamic tool length offset command cannot apply an offset to an axis other than its configured axis. The Grbl default axis is the Z-axis.",
   38: "Tool number greater than max supported value.",
   39: "Parameter P exceeded max",
+  40: "G-code command not allowed when tool change is pending.",
+  41: "Spindle not running when motion commanded in CSS or spindle sync mode.",
+  42: "Plane must be ZX for threading.",
+  43: "Max. feed rate exceeded.",
+  44: "RPM out of range.",
+  45: "Only homing is allowed when a limit switch is engaged.",
+  46: "Home machine to continue.",
+  47: "ATC: current tool is not set. Set current tool with M61.",
+  48: "Value word conflict.",
+  50: "Emergency stop active.",
   60: "SD failed to mount",
-  61: "SD card failed to open file for reading",
+  61: "Program file not selected or SD card failed to open file for reading",
   62: "SD card failed to open directory",
   63: "SD Card directory not found",
   64: "SD Card file empty",
@@ -73,7 +83,12 @@ const alarmCodes = {
   6: "Homing fail. Reset during active homing cycle.",
   7: "Homing fail. Safety door was opened during active homing cycle.",
   8: "Homing fail. Cycle failed to clear limit switch when pulling off. Try increasing pull-off setting or check wiring.",
-  9: "Homing fail. Could not find limit switch within search distance. Defined as 1.5 * max_travel on search and 5 * pulloff on locate phases."
+  9: "Homing fail. Could not find limit switch within search distance. Defined as 1.5 * max_travel on search and 5 * pulloff on locate phases.",
+  10: "EStop asserted. Clear and reset.",
+  11: "Homing required. Execute homing command ($H) to continue.",
+  12: "Limit switch engaged. Clear before continuing.",
+  13: "Probe protection triggered. Clear before continuing.",
+  14: "Spindle at speed timeout. Clear before continuing.",
 };
 
 const settingCodes = {
@@ -88,6 +103,12 @@ const settingCodes = {
   11: "Junction deviation, millimeters",
   12: "Arc tolerance, millimeters",
   13: "Report in inches, boolean",
+  14: "Invert control pins, mask",
+  15: "Invert coolant pins, mask",
+  16: "Invert spindle signals, mask",
+  17: "Pullup disable control pins, mask",
+  18: "Pullup disable limit pins, mask",
+  19: "Pullup disable probe pin, boolean",
   20: "Soft limits enable, boolean",
   21: "Hard limits enable, boolean",
   22: "Homing cycle enable, boolean",
@@ -96,6 +117,8 @@ const settingCodes = {
   25: "Homing search seek rate, mm/min",
   26: "Homing switch debounce delay, milliseconds",
   27: "Homing switch pull-off distance, millimeters",
+  28: "G73 Retract distance for chip breaking drilling, millimeters",
+  29: "Step pulse delay, microseconds",
   30: "Maximum spindle speed, RPM",
   31: "Minimum spindle speed, RPM",
   32: "Laser-mode enable, boolean",
@@ -112,3 +135,4 @@ const settingCodes = {
   131: "Y-axis maximum travel, millimeters",
   132: "Z-axis maximum travel, millimeters"
 };
+//https://github.com/terjeio/grblHAL/blob/master/doc/csv/setting_codes_en_US.csv

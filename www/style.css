@@ -23,6 +23,7 @@
     font-family: sans-serif, arial;
     touch-action: pan-y;
 }
+
 /* 
 body {
   min-height: 100vh;
@@ -53,10 +54,10 @@ input[type=number]::-webkit-outer-spin-button {
 
 img {
   position: absolute;
-  right: 1vw;
-  bottom: 9vmin;
-  width: 19vw;
-  /* filter:drop-shadow(2px 2px 1px grey); */
+  right: 2vw;
+  bottom: 11vmin;
+  width: min(36vh, 18vw);
+  filter:drop-shadow(2px 2px 1px grey);
   z-index: 3;
 }
 
@@ -66,13 +67,18 @@ img {
   bottom: 10vmin;
   width: 37vw;
   height: 18vmin;
-  border: 0.5vmin solid orange;
+  border: 0.5vmin solid rgb(50, 50, 50);
   border-radius: 2vmin;
-  font-family: 'Times New Roman', serif;
+  font-family: 'Courier', 'Times New Roman', 'serif';
   font-size: min(3.3vh, 2vw);
   z-index: 2; 
-  color:rgb(70, 70, 70);
+  color:rgb(50, 50, 50);
   background-color: transparent;
+  -ms-overflow-style: none;  /* IE and Edge for scrollbar removal */
+  scrollbar-width: none;  /* Firefox for scrollbar removal*/
+}
+#console::-webkit-scrollbar { /* Chrome, Safari and Opera scrollbar removal*/
+  display: none;
 }
 
 /* Style the tab content */
@@ -103,12 +109,12 @@ img {
   bottom: 0;
   height: 8vmin;
   width: 14vw;
-  color: rgb(70,70,70);
+  color: rgb(50, 50, 50);
   font-size: min(6vh, 3vw);
   background-color: lightgrey;
   vertical-align: bottom;
   transition: 0.2s;
-  border: 0.5vh solid rgb(70, 70, 70);
+  border: 0.5vh solid rgb(50, 50, 50);
   border-radius: 2vmin 2vmin 0 0;
   border-bottom: none;
   z-index: 2;
@@ -154,13 +160,22 @@ img {
   background-color: black;
 }
 
+.fsdetails {
+  position: absolute;
+  left: 0;
+  top: 18vh;
+  height: 6vh;
+  width: 100vw;
+  background-color: rgb(50, 50, 50);
+}
+
 .wcs{
   position: absolute;
   top: 0;
-  height: 8vh;
+  height: 6vh;
   width: 18vw;
   background-color: transparent;
-  font-size: min(8vh, 4vw);
+  font-size: min(6vh, 3vw);
   color: whitesmoke;
   text-align: right;
   border: none;
@@ -168,25 +183,25 @@ img {
 
 .drolabel {
   position: absolute;
-  top: 6vh;
+  top: 0;
   opacity: 50%;
-  font-size: 6vh;
-
+  font-size: 8vh;
+  line-height: 8vh;
 }
 #labelXw {
   left: 1vw;
   color: peachpuff;
 }
 #labelYw {
-  left: 23vw;
+  left: 22vw;
   color: powderblue;
 }
 #labelZw {
-  left: 45vw;
+  left: 43vw;
   color: khaki;
 }
 #labelAw {
-  left: 67vw;
+  left: 64vw;
   color: tan;
 }
 
@@ -209,11 +224,11 @@ img {
 
 .mcs{
   position: absolute;
-  top: 7vh;
+  top: 5vh;
   height: 4vh;
   width: 18vw;
   background-color: transparent;
-  font-size: 3vmin;
+  font-size: min(3vh, 1.5vw);
   color:lightgray;
   text-align: right;
   outline: none;
@@ -235,8 +250,8 @@ img {
 
 .drobtn{
   position: absolute;
-  top: 12vh;
-  height: 9vmin;
+  top: 9vh;
+  height: 8vmin;
   width: 8.5vw;
   font-size: min(6vh, 3vw);
   background-color: lightgrey;
@@ -286,31 +301,30 @@ img {
 
 #labelFeed{
   position: absolute;
-  left: 1vw;
-  bottom: 1vh;
+  left: 10.5vw;
   color: whitesmoke;
   opacity: 50%;
   height: 6vh;
+  width: 8.5vw;
   line-height: 6vh;
   font-size: min(5vh, 2.5vw);
 }
 #Feed {
   position: absolute;
-  left: 8vw;
-  bottom: 1vh;
+  left: 1vw;
   height: 6vh;
-  width: 11vw;
-  background-color: black;
+  width: 8.5vw;
+  background-color: transparent;
   font-size: min(6vh, 3vw);
   color: whitesmoke;
   text-align: right;
   border: none;
+  line-height: 6vh;
 }
 
 #labelRpm{
   position: absolute;
-  left: 23vw;
-  bottom: 1vh;
+  left: 31.5vw;
   color: orange;
   opacity: 50%;
   height: 6vh;
@@ -319,72 +333,83 @@ img {
 }
 #Rpm {
   position: absolute;
-  left: 30vw;
-  bottom: 1vh;
+  left: 22vw;
   height: 6vh;
-  width: 11vw;
+  width: 8.5vw;
   background-color: transparent;
   font-size: min(6vh, 3vw);
   color: orange;
   text-align: right;
   border: none;
+  line-height: 6vh;
 }
 
-#labelFile{
-  position: absolute;
-  left: 45vw;
-  bottom: 1vh;
-  color: grey;
-  height: 6vh;
-  line-height: 6vh;
-  font-size: min(5vh, 2.5vw);
-}
 #fileName {
   position: absolute;
-  left: 51vw;
-  bottom: 1vh;
+  left: 43vw;
   height: 6vh;
-  width: 37vw;
+  width: 29vw;
   background-color: transparent;
   font-size: min(5vh, 2.5vw);
   color: lightgrey;
   text-align: left;
-  border: none;
+  line-height: 6vh;
 }
 #fileProgress {
   position: absolute;
-  right: 1vw;
-  bottom: 1vh;
+  left: 64vw;
   height: 6vh;
-  width: 10vw;
+  width: 8.5vw;
   background-color: transparent;
   font-size: min(5vh, 2.5vw);
-  color: aqua;
+  color: lightgrey;
   text-align: right;
-  border: none;
+  line-height: 6vh;
+}
+
+#elapsedTime {
+  position: absolute;
+  right: 1vw;
+  height: 6vh;
+  width: 12vw;
+  background-color: transparent;
+  font-size: min(5vh, 2.5vw);
+  color: yellowgreen;
+  text-align: right;
+  line-height: 6vh;
 }
 
 #state {
   position: absolute;
   right: 1vw;
   top: 1vh;
-  height: 8vh;
+  height: 6vh;
   width: 18vw;
   background-color: transparent;
   font-size: min(6vh, 3vw);
   font-weight: bold;
   text-align: right;
   color: lightgray;
-  border: none;
-  outline: none;
   text-transform: uppercase;
+}
+
+#ln {
+  position: absolute;
+  left: 73.5vw;
+  height: 6vh;
+  width: 8.5vw;
+  background-color: transparent;
+  font-size: min(5vh, 2.5vw);
+  text-align: right;
+  color: lightgrey;
+  line-height: 6vh;
 }
 
 #woffset {
   position: absolute;
   right: 1vw;
-  top: 15vh;
-  height: 8vh;
+  top: 6.5vh;
+  height: 6vh;
   width: 10vw;
   background-color: transparent;
   font-size: min(6vh, 3vw);
@@ -393,6 +418,29 @@ img {
   border: none;
   outline: none;
   text-transform: uppercase;
+}
+
+.states {
+  display: grid;
+  grid-template-columns: auto auto auto auto auto auto auto auto auto;
+  /* grid-gap: 1vw; */
+  position: absolute;
+  left: 0;
+  top: 24vh;
+  height: 6vh;
+  width: 100vw;
+  background-color: rgb(50, 50, 50);
+  font-size: min(5vh, 2.5vw);
+  color: rgb(50, 50, 50);
+  text-align: center;
+  line-height: 6vh;
+
+}
+.AccPn {
+  border-left: 2px solid rgb(50, 50, 50);
+  border-right: 2px solid rgb(50, 50, 50);
+  background-color: grey;
+  border-radius: 2vmin 2vmin 0 0;
 }
 
 button {
@@ -412,7 +460,7 @@ button:hover{
 
 .ovbtn {
   position: absolute;
-  background-color:rgb(70, 70, 70);
+  background-color:rgb(50, 50, 50);
   color: whitesmoke;
   font-size: min(5vh, 2.5vw);
   height: 10vmin;
@@ -423,7 +471,7 @@ button:hover{
 }
 .ovvalue {
   position: absolute;
-  background-color: rgb(70, 70, 70);
+  background-color: rgb(50, 50, 50);
   color: orange;
   font-size: min(6vh, 3vw);
   text-align: center;
@@ -620,6 +668,10 @@ button:hover{
   top: 60vh;
   right: 15vw;
 }
+#stop {
+  top: 46vh;
+  right: 28vw;
+}
 
 .radio-toolbar input[type="radio"] {
   opacity: 0;
@@ -678,8 +730,11 @@ button:hover{
 }
 table {
   width: 38vw;
-  border-spacing: 1vh;
+  border-spacing: 1vmin;
   z-index: 2;
+}
+#tablediv::-webkit-scrollbar { /* Chrome, Safari and Opera scrollbar removal */
+  display: none;
 }
 #tablediv {
   position: absolute;
@@ -687,12 +742,42 @@ table {
   top: 1vh;
   height: 67vh;
   width: 38vw;
-  overflow: scroll;
-  /* touch-action: unset; */
+  overflow-x: hidden;
+  overflow-y: auto;
+  -ms-overflow-style: none;  /* IE and Edge scrollbar removal */
+  scrollbar-width: none;  /* Firefox scrollbar removal */
 }
+#progressborder {
+  height: 6vh;
+  width: 37vw;
+  margin: auto;
+  background-color: lightgrey;
+  border-radius: 1vmin;
+  /* border: 0.5vmin solid darkslategrey; */
+}
+#sdprogressbar {
+  height: 6vh;
+  background-color: darkslategray;
+  border-radius: 1vmin 0 0 1vmin;
+}
+#sdsize {
+  margin: 0 1vmin 0 1vmin;
+  float: right;
+  line-height: 6vh;
+  color: gray;
+  font-size: min(4vh, 2vw);
+}
+#sdpercent {
+  margin: 0 1vmin 0 1vmin;
+  float: left;
+  line-height: 6vh;
+  color: gray;
+  font-size: min(4vh, 2vw);
+}
+
 td {
   border-radius: 1vmin;
-  padding: 2vmin 0.5vmin;
+  padding: 1.6vmin 0.5vmin;
   cursor: pointer;
   font-size: min(4vh, 2vw);
   font-weight: bold;
@@ -713,9 +798,26 @@ th {
   color: whitesmoke;
   background-color:darkgreen;
 }
-#reloadfiles {
-/* margin-left: 15vw; */
-width: 37vw;
-margin-left: 0.5vw;
-margin-top: 2vh;
+.directory {
+  background-color: goldenrod;
+}
+#backbtn {
+  position: absolute;
+  left:40vw;
+  bottom: 0;
+  width: 12vw;
+  height: 8vmin;
+  border-radius: 2vh 2vh 0 0;
+  /* margin-left: 0.5vw;
+  margin-top: 2vh; */
+}
+#reloadbtn {
+  position: absolute;
+  left:53vw;
+  bottom: 0;
+  width: 12vw;
+  height: 8vmin;
+  border-radius: 2vh 2vh 0 0;
+  /* margin-right: 0.5vw;
+  margin-top: 2vh; */
 }

@@ -23,11 +23,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="/favicon.png"/>
-
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <img src="/logo.png" />
     <title>Valay HMI</title>
     <link rel="stylesheet" href="style.css">
-
+    <link rel="stylesheet" href="numpad.css" />
+    <script src="numpad.js"></script>
 </head>
 
 <body>
@@ -48,14 +49,12 @@
             <label id='labelYs' class='drolabelm'>Ym</label><input type="number" id="Ys" class='mcs'>
             <label id='labelZs' class='drolabelm'>Zm</label><input type="number" id="Zs" class='mcs'>
             <label id='labelAs' class='drolabelm'>Am</label><input type="number" id="As" class='mcs'>
-            
+
             <div id="state"></div>
-            <div id="woffset"></div>
             
-            <label id='labelFeed'>Feed:</label><input type="number" id="Feed">
-            <label id='labelRpm'>RPM:</label><input type="number" id="Rpm">
-            <label id='labelFile'>File:</label><input type="text" id="fileName">
-            <label id='labelProgress'>File:</label><input type="text" id="fileProgress">
+            <div id="woffset"></div>
+
+
 
             <button id="x0" class="drobtn" onclick="x0();">X=0</button>
             <button id="y0" class="drobtn" onclick="y0();">Y=0</button>
@@ -68,6 +67,29 @@
             <button id="goa0" class="drobtn" onclick="goa0();">&#10148;A0</button>
 
         </div>
+        <div id="fsdetails" class="fsdetails">
+            <div id="Feed"></div>
+            <div id="labelFeed">mm/min</div>
+            <div id="Rpm"></div>
+            <div id="labelRpm">rpm</div>
+            <div id="fileName"></div>
+            <div id="fileProgress"></div>
+            <div id="ln"></div>
+            <div id="elapsedTime"></div>
+        </div>
+
+        <div id="states" class="states">
+            <div id="sp" class="AccPn">spindle</div>
+            <div id="clnt" class="AccPn">coolant</div>
+            <div id="pr" class="AccPn Pn">probe</div>
+            <div id="xl" class="AccPn Pn">x-lim</div>
+            <div id="yl" class="AccPn Pn">y-lim</div>
+            <div id="zl" class="AccPn Pn">z-lim</div>
+            <div id="door" class="AccPn Pn">door</div>
+            <div id="driveAl" class="AccPn Pn">drive-Al</div>
+            <div id="eStop" class="AccPn Pn">E-Stop</div>
+        </div>
+
 
         <div id='mainbuttons' class="main">
 
@@ -78,6 +100,7 @@
             <button class='cmdbtn' id="start" onclick="start();">Start</button>
             <button class='cmdbtn' id="hold" onclick="pause();">Hold</button>
             <button class='cmdbtn' id="probe" onclick="probe();">Probe</button>
+            <!-- <button class='cmdbtn' id="stop" onclick="stop();">Stop</button> -->
         </div>
 
         <div id="jog" class="tabcontent">
@@ -93,28 +116,11 @@
             <button id="bm" onclick="Bm();">B-</button>
             <button id="bp" onclick="Bp();">B+</button>
 
-            <input type='text' id='mdi1' onfocus="this.value=''; inputFocused();" onblur="inputBlurred();"><button onclick='mdi1();' id='mdi1btn'>MDI1</button>
-            <input type='text' id='mdi2' onfocus="this.value=''; inputFocused();" onblur="inputBlurred();"><button onclick='mdi2();' id='mdi2btn'>MDI2</button>
+            <input type='text' id='mdi1' onfocus="this.value=''; inputFocused();" onblur="inputBlurred();"><button
+                onclick='mdi1();' id='mdi1btn'>MDI1</button>
+            <input type='text' id='mdi2' onfocus="this.value=''; inputFocused();" onblur="inputBlurred();"><button
+                onclick='mdi2();' id='mdi2btn'>MDI2</button>
 
-            <!-- <div id="radio-buttons" class="radio-toolbar">
-                <input type="radio" class="jd" id="rp002" name="jogdistance" value="0.002" onclick="setJogDistance()">
-                <label id="p002" for="rp002">.002</label>
-
-                <input type="radio" class="jd" id="rp01" name="jogdistance" value="0.01" onclick="setJogDistance()">
-                <label id="p01" for="rp01">.01</label>
-
-                <input type="radio" class="jd" id="rp1" name="jogdistance" value="0.1" onclick="setJogDistance()">
-                <label id="p1" for="rp1">.1</label>
-
-                <input type="radio" class="jd" id="rn1" name="jogdistance" value="1" onclick="setJogDistance()" checked>
-                <label id="n1" for="rn1">1</label>
-
-                <input type="radio" class="jd" id="rn5" name="jogdistance" value="5" onclick="setJogDistance()">
-                <label id="n5" for="rn5">5</label>
-
-                <input type="radio" class="jd" id="rn25" name="jogdistance" value="25" onclick="setJogDistance()">
-                <label id="n25" for="rn25">25</label>
-            </div> -->
             <div id="radio-buttons" class="radio-toolbar">
                 <input type="radio" id="jd0" name="jogdistance" value="0.002" onclick="radioClick(this);">
                 <label id="l0" for="jd0">.002</label>
@@ -151,15 +157,21 @@
             <div id='tablediv'>
                 <table id='filestable' class='fileslayout'>
                     <thead>
-                    <tr>
-                        <th>File Name</th>
-                        <th>Size</th>
-                    </tr>
-                </thead>
-                <tbody id="tabledata"></tbody>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Size</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabledata"></tbody>
                 </table>
-                <button id='reloadfiles' onclick='reloadlist();'>Reload File List</button>
+                <div id='progressborder'>
+                    <div id='sdsize'></div>
+                    <div id='sdpercent'></div>
+                    <div id='sdprogressbar'></div>
+                </div>
             </div>
+            <button id='backbtn' onclick='backOneLevel();'>Back</button>
+            <button id='reloadbtn' onclick='reloadList();'>Reload</button>
         </div>
 
         <div id="settings" class="tabcontent">
@@ -167,8 +179,6 @@
         </div>
     </div>
     <script type="text/javascript" src="app.js"></script>
-
-
 </body>
 
 </html>

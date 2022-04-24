@@ -1,0 +1,65 @@
+/* (A) WRAPPER */
+#numWrap {
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s;
+}
+#numWrap.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* (B) NUMPAD */
+#numPad {
+  max-width: 60%;
+  background: grey;
+  margin: 50vh auto 0 auto;
+  transform: translateY(-50%);
+  padding: 10px;
+  border-radius: 2.5vmin;
+}
+
+/* (C) DISPLAY */
+#numDisplay {
+  box-sizing: border-box;
+  width: 100%;
+  border: 0;
+  padding: 5px;
+  margin-bottom: 10px;
+  background: #000;
+  color: #fff;
+  font-size: 8vmin;
+  text-align: right;
+  border-radius: 1vmin;
+}
+#numDisplay:focus { outline: none; }
+#numDisplay::selection { background: none; }
+
+/* (D) BUTTONS WRAPPER */
+#numBWrap {
+  display: grid;
+  grid-template-columns: auto auto auto auto auto;
+  grid-gap: 1vmin;
+}
+
+/* (E) BUTTONS */
+#numBWrap div {
+  font-size: 5vmin;
+  color: #fff;
+  text-align: center;
+  padding: 2vmin;
+  border-radius: 1vmin;
+}
+#numBWrap div:hover { cursor: pointer; }
+#numBWrap .num, #numBWrap .zero, #numBWrap .dot { background: #565656; }
+#numBWrap .zero { grid-column: span 2; }
+#numBWrap .del, #numBWrap .clr, #numBWrap .half, #numBWrap .go, #numBWrap .sign { background: #333; }
+#numBWrap .cx { background: #940909; }
+#numBWrap .ok { background: #115296; }
+#numBWrap .get { background: green; }
