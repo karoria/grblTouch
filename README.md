@@ -7,7 +7,9 @@ This is a basic but working webUI project based on websockets protocol. Do the n
 
 A webUI is not a "sender" software. It runs a gcode file from SD card only. For mostly all other aspects, it acts same as sender softwares to communicate with grbl controller.
 
-A raspberry pi 4 (recommended) with 7 inch display and combo case should be ideal for grblTouch. For MDI entries, user may require keyboard on raspberry pi and similar OS.
+A raspberry pi 3 or 4 (recommended) with 7 inch display and combo case should be ideal for grblTouch. For MDI entries, user may require keyboard on raspberry pi and similar OS. A mini generic wireless keyboard (with USB dongle which is to be inserted to PC/raspberry pi) is highly recommended to get full benefit of this software as it will work like a pendant and mostly there will be no need to touch the screen!
+
+Folders/Directories are now supported and they will be highlighted in yellow in files table. One can further go inside those directories to select files to run.
 
 grblTouch also facilitates keyboard shortcuts as per following table.
 
@@ -27,10 +29,15 @@ Left Arrow: X minus jog
 Up Arrow: Y minus jog  
 Down Arrow: Y plus jog  
 Page Up: Z plus jog  
-Page Down: Z minus jog  
-F1: Switch Jog Tab  
-F2: Switch Run Tab  
-F5: Reload page (system function. Don't use it when file is running. It resets websocket connection as well as controller)  
+Page Down: Z minus jog
+Tab + X: Set X work coordinate to zero in active coordinate system (e.g.G54)
+Tab + Y: Set Y work coordinate to zero in active coordinate system
+Tab + Z: Set Z work coordinate to zero in active coordinate system
+Tab + A: Set A work coordinate to zero in active coordinate system
+Tab + B: Set B work coordinate to zero in active coordinate system
+F1: Switch to Jog Tab  
+F2: Switch to Run Tab  
+F5: Reload page (browser function. Don't use it when file is running. It resets websocket connection as well as controller)  
 F6: Decrease screen brightness by 10% (minimum 50%)  
 F7: Increase screen brightness by 10% (maximum 100%)  
 F8: Coolant On  
