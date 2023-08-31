@@ -1,0 +1,2515 @@
+<!-- 
+  index.html.gz - Part of grblTouch
+
+  Copyright (c) 2022 Ravi Karoria (www.engilabs.com | karoria@gmail.com)
+
+  grblTouch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  grblTouch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  To get a copy of the GNU General Public License, see <http://www.gnu.org/licenses/>. -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/littlefs/favicon.png" />
+    <title>Valay HMI</title>
+    <style>
+        * {
+            font-family: sans-serif, arial;
+            touch-action: pan-y;
+        }
+
+        body {
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+
+        #brightness {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: block;
+            background: rgba(0, 0, 0, 0);
+            pointer-events: none;
+            /* to see through for mouse clicks, etc. */
+        }
+
+        /* For removing up and down arrows when input field is selected */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        svg {
+            position: absolute;
+            right: 2%;
+            bottom: 11%;
+            filter: drop-shadow(2px 2px 1px grey);
+            z-index: 3;
+        }
+
+        #console {
+            position: absolute;
+            left: 40%;
+            bottom: 10%;
+            width: 37%;
+            height: 18%;
+            border: 0.5vmin solid rgb(50, 50, 50);
+            border-radius: 2vmin;
+            font-family: 'Courier', 'Times New Roman', 'serif';
+            font-size: min(3vh, 2vw);
+            z-index: 2;
+            color: rgb(50, 50, 50);
+            background-color: transparent;
+            -ms-overflow-style: none;
+            /* IE and Edge for scrollbar removal */
+            scrollbar-width: none;
+            /* Firefox for scrollbar removal*/
+        }
+
+        #console::-webkit-scrollbar {
+            /*Chrome, Safari and Opera scrollbar removal*/
+            display: none;
+        }
+
+        /* Style the tab content */
+        .tabcontent {
+            position: absolute;
+            width: 100%;
+            height: 70%;
+            top: 30%;
+            left: 0;
+        }
+
+        /* Style the buttons that are used to open the tab content */
+        .tablinks {
+            position: absolute;
+            bottom: 0;
+            height: 8%;
+            width: 14%;
+            color: rgb(50, 50, 50);
+            font-size: min(6vh, 3vw);
+            background-color: lightgrey;
+            vertical-align: bottom;
+            transition: 0.2s;
+            border: 0.5vh solid rgb(50, 50, 50);
+            border-radius: 2vmin 2vmin 0 0;
+            border-bottom: none;
+            z-index: 2;
+        }
+
+        /* Change background color of buttons on hover */
+        .tab>button:hover {
+            background-color: transparent;
+            color: darkblue;
+            border-bottom: none;
+            transition: 0.2s;
+        }
+
+        /* Create an active/current "tab button" class */
+        .tab>button.active {
+            background-color: orange;
+            color: darkblue;
+            transition: 0.2s;
+            border-color: darkblue;
+            height: 9%;
+            border: 0.5vh solid darkblue;
+            border-bottom: none;
+            font-weight: bold;
+        }
+
+        #jogbtn {
+            right: 17%;
+        }
+
+        #runbtn {
+            right: 2%;
+        }
+
+        #settingsbtn {
+            right: 2%;
+        }
+
+        .dro {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 30%;
+            width: 100%;
+            background-color: black;
+        }
+
+        .fsdetails {
+            position: absolute;
+            left: 0;
+            top: 18%;
+            height: 6%;
+            width: 100%;
+            background-color: rgb(50, 50, 50);
+        }
+
+        .wcs {
+            position: absolute;
+            top: 0;
+            height: 20%;
+            /*with respect to 30% height of parent div dro*/
+            width: 18%;
+            background-color: transparent;
+            font-size: min(6vh, 3vw);
+            color: whitesmoke;
+            text-align: right;
+            border: none;
+        }
+
+        .drolabel {
+            position: absolute;
+            top: 0;
+            opacity: 50%;
+            font-size: 8vh;
+            line-height: 8vh;
+        }
+
+        #labelXw {
+            left: 1%;
+            color: peachpuff;
+        }
+
+        #labelYw {
+            left: 22%;
+            color: powderblue;
+        }
+
+        #labelZw {
+            left: 43%;
+            color: khaki;
+        }
+
+        #labelAw {
+            left: 64%;
+            color: tan;
+        }
+
+        #Xw {
+            left: 1%;
+            color: peachpuff;
+        }
+
+        #Yw {
+            left: 22%;
+            color: powderblue;
+        }
+
+        #Zw {
+            left: 43%;
+            color: khaki;
+        }
+
+        #Aw {
+            left: 64%;
+            color: tan;
+        }
+
+        .mcs {
+            position: absolute;
+            top: 16%;
+            height: 14%;
+            width: 18%;
+            background-color: transparent;
+            font-size: min(3vh, 1.5vw);
+            color: lightgray;
+            text-align: right;
+            outline: none;
+            border: hidden;
+        }
+
+        #Xs {
+            left: 1%;
+        }
+
+        #Ys {
+            left: 22%;
+        }
+
+        #Zs {
+            left: 43%;
+        }
+
+        #As {
+            left: 64%;
+        }
+
+
+        .drobtn {
+            position: absolute;
+            top: 30%;
+            height: 26%;
+            width: 8.5%;
+            font-size: min(6vh, 3vw);
+            background-color: lightgrey;
+            color: black;
+            border: none;
+            opacity: 60%;
+        }
+
+        .drobtn:hover {
+            opacity: 100;
+            border: none;
+        }
+
+        #x0 {
+            left: 1%;
+            background-color: peachpuff;
+        }
+
+        #y0 {
+            left: 22%;
+            background-color: powderblue;
+        }
+
+        #z0 {
+            left: 43%;
+            background-color: khaki;
+        }
+
+        #a0 {
+            left: 64%;
+            background-color: tan;
+        }
+
+        #gox0 {
+            left: 10.5%;
+            background-color: peachpuff;
+        }
+
+        #goy0 {
+            left: 31.5%;
+            background-color: powderblue;
+        }
+
+        #goz0 {
+            left: 52.5%;
+            background-color: khaki;
+        }
+
+        #goa0 {
+            left: 73.5%;
+            background-color: tan;
+        }
+
+        #labelFeed {
+            position: absolute;
+            left: 10.5%;
+            color: whitesmoke;
+            opacity: 50%;
+            width: 8.5%;
+            line-height: 6vh;
+            font-size: min(5vh, 2.5vw);
+        }
+
+        #Feed {
+            position: absolute;
+            left: 1%;
+            width: 8.5%;
+            background-color: transparent;
+            font-size: min(6vh, 3vw);
+            color: whitesmoke;
+            text-align: right;
+            border: none;
+            line-height: 6vh;
+        }
+
+        #labelRpm {
+            position: absolute;
+            left: 31.5%;
+            color: orange;
+            opacity: 50%;
+            line-height: 6vh;
+            font-size: min(5vh, 2.5vw);
+        }
+
+        #Rpm {
+            position: absolute;
+            left: 22%;
+            width: 8.5%;
+            background-color: transparent;
+            font-size: min(6vh, 3vw);
+            color: orange;
+            text-align: right;
+            border: none;
+            line-height: 6vh;
+        }
+
+        #fileName {
+            position: absolute;
+            left: 43%;
+            width: 29%;
+            background-color: transparent;
+            font-size: min(5vh, 2.5vw);
+            color: lightgrey;
+            text-align: left;
+            line-height: 6vh;
+        }
+
+        #fileProgress {
+            position: absolute;
+            left: 64%;
+            width: 8.5%;
+            background-color: transparent;
+            font-size: min(5vh, 2.5vw);
+            color: lightgrey;
+            text-align: right;
+            line-height: 6vh;
+        }
+
+        #ln {
+            position: absolute;
+            left: 73.5%;
+            width: 8.5%;
+            background-color: transparent;
+            font-size: min(5vh, 2.5vw);
+            text-align: right;
+            color: lightgrey;
+            line-height: 6vh;
+        }
+
+        #elapsedTime {
+            position: absolute;
+            right: 1%;
+            width: 12%;
+            background-color: transparent;
+            font-size: min(5vh, 2.5vw);
+            color: yellowgreen;
+            text-align: right;
+            line-height: 6vh;
+        }
+
+        #state {
+            position: absolute;
+            right: 1%;
+            top: 1%;
+            height: 6%;
+            width: 18%;
+            background-color: transparent;
+            font-size: min(6vh, 3vw);
+            font-weight: bold;
+            text-align: right;
+            color: lightgray;
+            text-transform: uppercase;
+        }
+
+        #woffset {
+            position: absolute;
+            right: 1%;
+            top: 22%;
+            width: 10%;
+            background-color: transparent;
+            font-size: min(6vh, 3vw);
+            text-align: right;
+            color: lightgray;
+            border: none;
+            outline: none;
+            text-transform: uppercase;
+        }
+
+        .states {
+            display: grid;
+            grid-template-columns: auto auto auto auto auto auto auto auto auto;
+            position: absolute;
+            left: 0;
+            top: 24%;
+            height: 6%;
+            width: 100%;
+            background-color: rgb(50, 50, 50);
+            font-size: min(5vh, 2.5vw);
+            color: rgb(50, 50, 50);
+            text-align: center;
+            line-height: 6vh;
+
+        }
+
+        .AccPn {
+            border-left: 2px solid rgb(50, 50, 50);
+            border-right: 2px solid rgb(50, 50, 50);
+            background-color: grey;
+            border-radius: 2vmin 2vmin 0 0;
+        }
+
+        button {
+            background-color: darkblue;
+            border: none;
+            border-radius: 2vmin;
+            color: lightgrey;
+            font-size: min(5vh, 2.5vw);
+            width: 8%;
+            height: 14%;
+        }
+
+        button:hover {
+            background-color: transparent;
+            border: 0.5vh solid darkblue;
+            color: darkblue;
+        }
+
+        .ovbtn {
+            position: absolute;
+            background-color: rgb(50, 50, 50);
+            color: whitesmoke;
+            font-size: min(5vh, 2.5vw);
+        }
+
+        #fovm {
+            left: 40%;
+            top: 2%;
+        }
+
+        #fovr {
+            left: 49%;
+            top: 2%;
+        }
+
+        #fovp {
+            left: 58%;
+            top: 2%;
+        }
+
+        #sovm {
+            left: 40%;
+            top: 20%;
+        }
+
+        #sovr {
+            left: 49%;
+            top: 20%;
+        }
+
+        #sovp {
+            left: 58%;
+            top: 20%;
+        }
+
+        #rov25 {
+            left: 40%;
+            top: 38%;
+        }
+
+        #rov50 {
+            left: 49%;
+            top: 38%;
+        }
+
+        #rov100 {
+            left: 58%;
+            top: 38%;
+        }
+
+
+        #ym {
+            position: absolute;
+            top: 2%;
+            left: 10%;
+        }
+
+        #yp {
+            position: absolute;
+            top: 38%;
+            left: 10%;
+        }
+
+        #xm {
+            position: absolute;
+            top: 20%;
+            left: 2%;
+        }
+
+        #xp {
+            position: absolute;
+            top: 20%;
+            left: 18%;
+        }
+
+        #zp {
+            position: absolute;
+            top: 2%;
+            left: 29%;
+        }
+
+        #zm {
+            position: absolute;
+            top: 38%;
+            left: 29%;
+        }
+
+        #ap {
+            position: absolute;
+            top: 2%;
+            left: 40%;
+        }
+
+        #am {
+            position: absolute;
+            top: 38%;
+            left: 40%;
+        }
+
+        #bp {
+            position: absolute;
+            top: 2%;
+            left: 51%;
+        }
+
+        #bm {
+            position: absolute;
+            top: 38%;
+            left: 51%;
+        }
+
+        .mdi {
+            position: absolute;
+            left: 2%;
+            width: 24%;
+            height: 10%;
+            border: 0.5vmin solid orange;
+            border-radius: 2vmin;
+            font-size: 4vmin;
+            outline: none;
+            background-color: transparent;
+            color: darkblue;
+            text-align: right;
+            text-transform: uppercase;
+        }
+
+        #mdi1 {
+            bottom: 30%;
+        }
+
+        #mdi2 {
+            bottom: 16%;
+        }
+
+        .mdi:focus {
+            border-color: darkblue;
+            box-shadow: 0 0 3vmin;
+            background-color: whitesmoke;
+        }
+
+        .mdibtn {
+            position: absolute;
+            left: 27.5%;
+            height: 12%;
+            width: 10%;
+            font-size: min(5.5vh, 2.75vw);
+        }
+
+        #mdi1btn {
+            bottom: 30%;
+        }
+
+        #mdi2btn {
+            bottom: 16%;
+        }
+
+        .cmdbtn {
+            position: absolute;
+            color: whitesmoke;
+            background-color: rgb(96, 41, 2);
+            width: 9%;
+            height: 10%;
+            font-size: min(4.5vh, 2.25vw);
+            z-index: 2;
+        }
+
+        #reset {
+            top: 32%;
+            right: 1%;
+        }
+
+        #unlock {
+            top: 45%;
+            right: 1%;
+        }
+
+        #home {
+            top: 58%;
+            right: 1%;
+        }
+
+        #start {
+            top: 32%;
+            right: 11%;
+            background-color: darkgreen;
+        }
+
+        #hold {
+            top: 45%;
+            right: 11%;
+            background-color: goldenrod;
+        }
+
+        #probe {
+            top: 58%;
+            right: 11%;
+        }
+
+        #spindle {
+            top: 32%;
+            right: 21%;
+        }
+
+        #coolant {
+            top: 45%;
+            right: 21%;
+        }
+
+        #tool {
+            top: 58%;
+            right: 21%;
+        }
+
+        .radio-toolbar input[type="radio"] {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        #radio-buttons {
+            position: absolute;
+            bottom: 0;
+        }
+
+        .radio-toolbar>label {
+            position: absolute;
+            bottom: 0;
+            display: block;
+            line-height: 8vmin;
+            color: darkblue;
+            font-size: min(6vh, 3vw);
+            text-align: center;
+            height: 8vmin;
+            border: 0.5vmin solid darkblue;
+            border-bottom: none;
+            border-radius: 2vh 2vh 0 0;
+        }
+
+        #l0 {
+            left: 2vw;
+            width: 8vw;
+        }
+
+        #l1 {
+            left: 11vw;
+            width: 6vw;
+        }
+
+        #l2 {
+            left: 18vw;
+            width: 6vw;
+        }
+
+        #l3 {
+            left: 25vw;
+            width: 6vw;
+        }
+
+        #l4 {
+            left: 32vw;
+            width: 6vw;
+        }
+
+        #l5 {
+            left: 39vw;
+            width: 6vw;
+        }
+
+        .radio-toolbar label:hover {
+            background-color: darkblue;
+            color: white;
+        }
+
+        .radio-toolbar input[type="radio"]:checked+label {
+            background-color: darkblue;
+            color: whitesmoke;
+        }
+
+        table {
+            width: 38vw;
+            border-spacing: 1vmin;
+            z-index: 2;
+        }
+
+        #tablediv::-webkit-scrollbar {
+            /* Chrome, Safari and Opera scrollbar removal */
+            display: none;
+        }
+
+        #tablediv {
+            position: absolute;
+            left: 1vw;
+            top: 1vh;
+            height: 67vh;
+            width: 38vw;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -ms-overflow-style: none;
+            /* IE and Edge scrollbar removal */
+            scrollbar-width: none;
+            /* Firefox scrollbar removal */
+        }
+
+        #progressborder {
+            height: 6vh;
+            width: 37vw;
+            margin: auto;
+            background-color: lightgrey;
+            border-radius: 1vmin;
+            /* border: 0.5vmin solid darkslategrey; */
+        }
+
+        #sdprogressbar {
+            height: 6vh;
+            background-color: darkslategray;
+            border-radius: 1vmin 0 0 1vmin;
+        }
+
+        #sdsize {
+            margin: 0 1vmin 0 1vmin;
+            float: right;
+            line-height: 6vh;
+            color: gray;
+            font-size: min(4vh, 2vw);
+        }
+
+        #sdpercent {
+            margin: 0 1vmin 0 1vmin;
+            float: left;
+            line-height: 6vh;
+            color: gray;
+            font-size: min(4vh, 2vw);
+        }
+
+        td {
+            border-radius: 1vmin;
+            padding: 1.6vmin 0.5vmin;
+            cursor: pointer;
+            font-size: min(4vh, 2vw);
+            font-weight: bold;
+            text-align: right;
+        }
+
+        tr {
+            background-color: rgb(196, 196, 250);
+        }
+
+        th {
+            /* padding: 1vmin 0; */
+            background-color: darkblue;
+            border-radius: 1vmin;
+            font-size: min(4vh, 2vw);
+            padding: 1vmin;
+            color: whitesmoke;
+        }
+
+        .selected {
+            color: whitesmoke;
+            background-color: darkgreen;
+        }
+
+        .directory {
+            background-color: goldenrod;
+        }
+
+        #backbtn {
+            position: absolute;
+            left: 40vw;
+            bottom: 0;
+            width: 12vw;
+            height: 8vmin;
+            border-radius: 2vh 2vh 0 0;
+        }
+
+        #reloadbtn {
+            position: absolute;
+            left: 53vw;
+            bottom: 0;
+            width: 12vw;
+            height: 8vmin;
+            border-radius: 2vh 2vh 0 0;
+        }
+
+        /* (A) WRAPPER */
+        #numWrap {
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s;
+        }
+
+        #numWrap.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* (B) NUMPAD */
+        #numPad {
+            max-width: 60%;
+            background: grey;
+            margin: 50vh auto 0 auto;
+            transform: translateY(-50%);
+            padding: 10px;
+            border-radius: 2.5vmin;
+        }
+
+        /* (C) DISPLAY */
+        #numDisplay {
+            box-sizing: border-box;
+            width: 100%;
+            border: 0;
+            padding: 5px;
+            margin-bottom: 10px;
+            background: #000;
+            color: #fff;
+            font-size: 8vmin;
+            text-align: right;
+            border-radius: 1vmin;
+        }
+
+        #numDisplay:focus {
+            outline: none;
+        }
+
+        #numDisplay::selection {
+            background: none;
+        }
+
+        /* (D) BUTTONS WRAPPER */
+        #numBWrap {
+            display: grid;
+            grid-template-columns: auto auto auto auto auto;
+            grid-gap: 1vmin;
+        }
+
+        /* (E) BUTTONS */
+        #numBWrap div {
+            font-size: 5vmin;
+            color: #fff;
+            text-align: center;
+            padding: 2vmin;
+            border-radius: 1vmin;
+        }
+
+        #numBWrap div:hover {
+            cursor: pointer;
+        }
+
+        #numBWrap .num,
+        #numBWrap .zero,
+        #numBWrap .dot {
+            background: #565656;
+        }
+
+        #numBWrap .zero {
+            grid-column: span 2;
+        }
+
+        #numBWrap .del,
+        #numBWrap .clr,
+        #numBWrap .half,
+        #numBWrap .go,
+        #numBWrap .sign {
+            background: #333;
+        }
+
+        #numBWrap .cx {
+            background: #940909;
+        }
+
+        #numBWrap .ok {
+            background: #115296;
+        }
+
+        #numBWrap .get {
+            background: green;
+        }
+    </style>
+
+    <script>
+        //start of error, alarm and setting codes
+        const errorCodes = {
+            0: "no error",
+            1: "G-code words consist of a letter and a value. Letter was not found.",
+            2: "Numeric value format is not valid or missing an expected value.",
+            3: "Grbl '$' system command was not recognized or supported.",
+            4: "Negative value received for an expected positive value.",
+            5: "Homing cycle is not enabled via settings.",
+            6: "Minimum step pulse time must be greater than 3usec",
+            7: "EEPROM read failed. Reset and restored to default values.",
+            8: "Grbl '$' command cannot be used unless Grbl is IDLE. Ensures smooth operation during a job.",
+            9: "G-code locked out during alarm or jog state",
+            10: "Soft limits cannot be enabled without homing also enabled.",
+            11: "Max characters per line exceeded. Line was not processed and executed.",
+            12: "(Compile Option) Grbl '$' setting value exceeds the maximum step rate supported.",
+            13: "Safety door detected as opened and door state initiated.",
+            14: "(Grbl-Mega Only) Build info or startup line exceeded EEPROM line length limit.",
+            15: "Jog target exceeds machine travel. Command ignored.",
+            16: "Jog command with no '=' or contains prohibited g-code.",
+            20: "Unsupported or invalid g-code command found in block.",
+            21: "More than one g-code command from same modal group found in block.",
+            22: "Feed rate has not yet been set or is undefined.",
+            23: "G-code command in block requires an integer value.",
+            24: "Two G-code commands that both require the use of the XYZ axis words were detected in the block.",
+            25: "A G-code word was repeated in the block.",
+            26: "A G-code command implicitly or explicitly requires XYZ axis words in the block, but none were detected.",
+            27: "N line number value is not within the valid range of 1 - 9,999,999.",
+            28: "A G-code command was sent, but is missing some required P or L value words in the line.",
+            29: "Grbl supports six work coordinate systems G54-G59. G59.1, G59.2, and G59.3 are not supported.",
+            30: "The G53 G-code command requires either a G0 seek or G1 feed motion mode to be active. A different motion was active.",
+            31: "There are unused axis words in the block and G80 motion mode cancel is active.",
+            32: "A G2 or G3 arc was commanded but there are no XYZ axis words in the selected plane to trace the arc.",
+            33: "The motion command has an invalid target. G2, G3, and G38.2 generates this error, if the arc is impossible to generate or if the probe target is the current position.",
+            34: "A G2 or G3 arc, traced with the radius definition, had a mathematical error when computing the arc geometry. Try either breaking up the arc into semi-circles or quadrants, or redefine them with the arc offset definition.",
+            35: "A G2 or G3 arc, traced with the offset definition, is missing the IJK offset word in the selected plane to trace the arc.",
+            36: "There are unused, leftover G-code words that aren't used by any command in the block.",
+            37: "The G43.1 dynamic tool length offset command cannot apply an offset to an axis other than its configured axis. The Grbl default axis is the Z-axis.",
+            38: "Tool number greater than max supported value.",
+            39: "Parameter P exceeded max",
+            40: "G-code command not allowed when tool change is pending.",
+            41: "Spindle not running when motion commanded in CSS or spindle sync mode.",
+            42: "Plane must be ZX for threading.",
+            43: "Max. feed rate exceeded.",
+            44: "RPM out of range.",
+            45: "Only homing is allowed when a limit switch is engaged.",
+            46: "Home machine to continue.",
+            47: "ATC: current tool is not set. Set current tool with M61.",
+            48: "Value word conflict.",
+            50: "Emergency stop active.",
+            60: "SD failed to mount",
+            61: "Program file not selected or SD card failed to open file for reading",
+            62: "SD card failed to open directory",
+            63: "SD Card directory not found",
+            64: "SD Card file empty",
+            70: "Bluetooth failed to start"
+        };
+
+        const alarmCodes = {
+            0: "no alarm",
+            1: "Hard limit triggered. Machine position is likely lost due to sudden and immediate halt. Re-homing is highly recommended.",
+            2: "G-code motion target exceeds machine travel. Machine position safely retained. Alarm may be unlocked.",
+            3: "Reset while in motion. Grbl cannot guarantee position. Lost steps are likely. Re-homing is highly recommended.",
+            4: "Probe fail. The probe is not in the expected initial state before starting probe cycle, where G38.2 and G38.3 is not triggered and G38.4 and G38.5 is triggered.",
+            5: "Probe fail. Probe did not contact the workpiece within the programmed travel for G38.2 and G38.4.",
+            6: "Homing fail. Reset during active homing cycle.",
+            7: "Homing fail. Safety door was opened during active homing cycle.",
+            8: "Homing fail. Cycle failed to clear limit switch when pulling off. Try increasing pull-off setting or check wiring.",
+            9: "Homing fail. Could not find limit switch within search distance. Defined as 1.5 * max_travel on search and 5 * pulloff on locate phases.",
+            10: "EStop asserted. Clear and reset.",
+            11: "Homing required. Execute homing command ($H) to continue.",
+            12: "Limit switch engaged. Clear before continuing.",
+            13: "Probe protection triggered. Clear before continuing.",
+            14: "Spindle at speed timeout. Clear before continuing.",
+            15: "Homing fail auto squaring approach.",
+            16: "Self test failed.",
+            17: "One or more axis motor drive in Alarm."
+        };
+
+        const settingCodes = {
+            0: "Step pulse time, microseconds",
+            1: "Step idle delay, milliseconds",
+            2: "Step pulse invert, mask",
+            3: "Step direction invert, mask",
+            4: "Invert step enable pin, boolean",
+            5: "Invert limit pins, boolean",
+            6: "Invert probe pin, boolean",
+            10: "Status report options, mask",
+            11: "Junction deviation, millimeters",
+            12: "Arc tolerance, millimeters",
+            13: "Report in inches, boolean",
+            14: "Invert control pins, mask",
+            15: "Invert coolant pins, mask",
+            16: "Invert spindle signals, mask",
+            17: "Pullup disable control pins, mask",
+            18: "Pullup disable limit pins, mask",
+            19: "Pullup disable probe pin, boolean",
+            20: "Soft limits enable, boolean",
+            21: "Hard limits enable, boolean",
+            22: "Homing cycle enable, boolean",
+            23: "Homing direction invert, mask",
+            24: "Homing locate feed rate, mm/min",
+            25: "Homing search seek rate, mm/min",
+            26: "Homing switch debounce delay, milliseconds",
+            27: "Homing switch pull-off distance, millimeters",
+            28: "G73 Retract distance for chip breaking drilling, millimeters",
+            29: "Step pulse delay, microseconds",
+            30: "Maximum spindle speed, RPM",
+            31: "Minimum spindle speed, RPM",
+            32: "Laser-mode enable, boolean",
+            100: "X-axis steps per millimeter",
+            101: "Y-axis steps per millimeter",
+            102: "Z-axis steps per millimeter",
+            110: "X-axis maximum rate, mm/min",
+            111: "Y-axis maximum rate, mm/min",
+            112: "Z-axis maximum rate, mm/min",
+            120: "X-axis acceleration, mm/sec^2",
+            121: "Y-axis acceleration, mm/sec^2",
+            122: "Z-axis acceleration, mm/sec^2",
+            130: "X-axis maximum travel, millimeters",
+            131: "Y-axis maximum travel, millimeters",
+            132: "Z-axis maximum travel, millimeters"
+        };
+        //end of error, alarm and setting codes
+
+        //start of numpad code which opens numpad while clicking on coordinates
+        var numpad = {
+            // (A) CREATE NUMPAD HTML
+            hwrap: null, // numpad wrapper container
+            hpad: null, // numpad itself
+            hdisplay: null, // number display
+            hbwrap: null, // buttons wrapper
+            hbuttons: {}, // individual buttons
+            init: () => {
+                // (A1) WRAPPER
+                numpad.hwrap = document.createElement("div");
+                numpad.hwrap.id = "numWrap";
+
+                // (A2) ENTIRE NUMPAD ITSELF
+                numpad.hpad = document.createElement("div");
+                numpad.hpad.id = "numPad";
+                numpad.hwrap.appendChild(numpad.hpad);
+
+                // (A3) DISPLAY
+                numpad.hdisplay = document.createElement("input");
+                numpad.hdisplay.id = "numDisplay";
+                numpad.hdisplay.type = "text";
+                numpad.hdisplay.disabled = true;
+                numpad.hdisplay.value = "0";
+                numpad.hpad.appendChild(numpad.hdisplay);
+
+                // (A4) NUMBER BUTTONS
+                numpad.hbwrap = document.createElement("div");
+                numpad.hbwrap.id = "numBWrap";
+                numpad.hpad.appendChild(numpad.hbwrap);
+
+                // (A5) BUTTONS
+                let buttonator = (txt, css, fn) => {
+                    let button = document.createElement("div");
+                    button.innerHTML = txt;
+                    button.classList.add(css);
+                    button.onclick = fn;
+                    numpad.hbwrap.appendChild(button);
+                    numpad.hbuttons[txt] = button;
+                };
+
+                // 7 TO 9
+                for (let i = 7; i <= 9; i++) { buttonator(i, "num", () => { numpad.digit(i); }); }
+                // BACKSPACE
+                buttonator("BACK", "del", numpad.delete);
+                buttonator("GET", "get", numpad.recall);
+                // 4 TO 6
+                for (let i = 4; i <= 6; i++) { buttonator(i, "num", () => { numpad.digit(i); }); }
+                // CLEAR
+                buttonator("CLEAR", "clr", numpad.reset);
+                buttonator("HALF", "half", numpad.half);
+                // 1 to 3
+                for (let i = 1; i <= 3; i++) { buttonator(i, "num", () => { numpad.digit(i); }); }
+                // CANCEL
+                buttonator("+/-", "sign", numpad.toggleSign);
+                buttonator("GO", "go", numpad.go);
+                // 0
+                buttonator(0, "zero", () => { numpad.digit(0); });
+                // .
+                buttonator(".", "dot", numpad.dot);
+                // OK
+                buttonator("SET", "ok", numpad.select);
+                buttonator("&#10005;", "cx", () => { numpad.hide(1); });
+
+                // (A6) ATTACH NUMPAD TO HTML BODY
+                document.body.appendChild(numpad.hwrap);
+            },
+
+            // (B) BUTTON ACTIONS
+            // (B1) CURRENTLY SELECTED FIELD + MAX LIMIT
+            nowTarget: null, // Current selected input field
+            nowMax: 0, // Current max allowed digits
+
+            // (B2) NUMBER (0 TO 9)
+            digit: (num) => {
+                let current = numpad.hdisplay.value;
+                if (current.length < numpad.nowMax) {
+                    if (current == "0") { numpad.hdisplay.value = num; }
+                    else { numpad.hdisplay.value += num; }
+                }
+            },
+
+            // (B3) ADD DECIMAL POINT
+            dot: () => {
+                if (numpad.hdisplay.value.indexOf(".") == -1) {
+                    if (numpad.hdisplay.value == "0") { numpad.hdisplay.value = "0."; }
+                    else { numpad.hdisplay.value += "."; }
+                }
+            },
+
+            // (B4) BACKSPACE
+            delete: () => {
+                var length = numpad.hdisplay.value.length;
+                if (length == 1) { numpad.hdisplay.value = 0; }
+                else { numpad.hdisplay.value = numpad.hdisplay.value.substring(0, length - 1); }
+            },
+
+            // (B5) CLEAR ALL
+            reset: () => { numpad.hdisplay.value = "0"; },
+
+            // (B6-A) Recall
+            recall: function () {
+                numpad.hdisplay.value = numpad.nowTarget.value;
+            },
+
+            // (B6-B) Half
+            half: function () {
+                numpad.hdisplay.value = numpad.hdisplay.value / 2;
+            },
+
+            // (B6-B) Half
+            go: function () {
+                numpad.hide();
+                numpad.nowTarget.dispatchEvent(new Event("numpadgo"));
+            },
+
+            // Change sign
+            toggleSign: function () {
+                numpad.hdisplay.value = -numpad.hdisplay.value;
+            },
+
+            // (B6) OK - SET VALUE
+            select: () => {
+                numpad.nowTarget.value = numpad.hdisplay.value;
+                numpad.hide();
+                numpad.nowTarget.dispatchEvent(new Event("numpadok"));
+            },
+
+            // (C) ATTACH NUMPAD TO INPUT FIELD
+            attach: (opt) => {
+                // OPTIONS
+                //  target: required, target field.
+                //  max: optional, maximum number of characters. Default 255.
+                //  decimal: optional, allow decimal? Default true.
+                //  onselect: optional, function to call after selecting number.
+                //  oncancel: optional, function to call after canceling.
+
+                // (C1) DEFAULT OPTIONS
+                if (opt.max === undefined) { opt.max = 8; }
+                if (opt.decimal === undefined) { opt.decimal = true; }
+
+                // (C2) GET + SET TARGET OPTIONS
+                opt.target.readOnly = true; // PREVENT ONSCREEN KEYBOARD
+                opt.target.dataset.max = opt.max;
+                opt.target.dataset.decimal = opt.decimal;
+                opt.target.addEventListener("click", () => { numpad.show(opt.target); });
+
+                // (C3) ATTACH CUSTOM LISTENERS
+                if (opt.onselect) {
+                    opt.target.addEventListener("numpadok", opt.onselect);
+                }
+                if (opt.oncancel) {
+                    opt.target.addEventListener("numpadcx", opt.oncancel);
+                }
+                if (opt.ongo) {
+                    opt.target.addEventListener("numpadgo", opt.ongo);
+                }
+            },
+
+            // (D) SHOW NUMPAD
+            show: (target) => {
+                // (D1) SET CURRENT DISPLAY VALUE
+                let cv = "";   //old was let cv = target.value;
+                if (cv == "") { cv = "0"; }
+                numpad.hdisplay.value = cv;
+
+                // (D2) SET MAX ALLOWED CHARACTERS
+                numpad.nowMax = target.dataset.max;
+
+                // (D3) SET DECIMAL
+                if (target.dataset.decimal == "true") {
+                    numpad.hbwrap.classList.remove("noDec");
+                } else {
+                    numpad.hbwrap.classList.add("noDec");
+                }
+
+                // (D4) SET CURRENT TARGET
+                numpad.nowTarget = target;
+
+                // (D5) SHOW NUMPAD
+                numpad.hwrap.classList.add("open");
+            },
+
+            // (E) HIDE NUMPAD
+            hide: (manual) => {
+                if (manual) { numpad.nowTarget.dispatchEvent(new Event("numpadcx")); }
+                numpad.hwrap.classList.remove("open");
+            }
+        };
+        window.addEventListener("DOMContentLoaded", numpad.init);
+
+        window.addEventListener("load", () => {
+            // (C2) WITH ALL POSSIBLE OPTIONS
+            numpad.attach({
+                target: document.getElementById("Xw"),
+                onselect: () => { websocket.send('G10 L20 P0 X' + numpad.hdisplay.value + '\n'); },
+                ongo: () => { websocket.send('G0 X' + numpad.hdisplay.value + '\n'); }
+            });
+            numpad.attach({
+                target: document.getElementById("Yw"),
+                onselect: () => { websocket.send('G10 L20 P0 Y' + numpad.hdisplay.value + '\n'); },
+                ongo: () => { websocket.send('G0 Y' + numpad.hdisplay.value + '\n'); }
+            });
+            numpad.attach({
+                target: document.getElementById("Zw"),
+                onselect: () => { websocket.send('G10 L20 P0 Z' + numpad.hdisplay.value + '\n'); },
+                ongo: () => { websocket.send('G0 Z' + numpad.hdisplay.value + '\n'); }
+            });
+            numpad.attach({
+                target: document.getElementById("Aw"),
+                onselect: () => { websocket.send('G10 L20 P0 A' + numpad.hdisplay.value + '\n'); },
+                ongo: () => { websocket.send('G0 A' + numpad.hdisplay.value + '\n'); }
+            });
+        });
+        //end of numpad code which opens numpad while clicking on coordinates
+    </script>
+</head>
+
+<body>
+    <!-- Code for SVG logo of valay -->
+    <svg width="25%" height="20%" viewBox="-14 -2 80 40" id="svg137">
+        <defs id="defs134" />
+        <g inkscape:label="Layer 1" inkscape:groupmode="layer" id="layer1" transform="translate(-2.649931,-2.6512236)">
+            <g id="g38609" transform="matrix(1.1368027,0,0,1.1368027,6.4297573,4.9875449)">
+                <g id="g2702" transform="translate(0.4096284,0.5120355)">
+                    <path id="path10"
+                        style="fill:#3232ff;fill-rule:evenodd;stroke-width:0.132209;image-rendering:auto;fill-opacity:1"
+                        d="M 10.871496,21.19042 H 8.1541552 L 2.649931,10.196435 h 2.7311835 l 4.1317113,8.262802 4.1314072,-8.262802 h 2.731184 z" />
+                    <path id="path12"
+                        style="fill:#3232ff;fill-rule:evenodd;stroke-width:0.132209;image-rendering:auto;fill-opacity:1"
+                        d="m 26.871053,10.195999 v 10.980658 h -2.440139 v -0.817989 -4.67234 c 0,-0.44364 -0.08547,-0.864209 -0.256472,-1.261629 -0.171012,-0.397433 -0.4044,-0.744071 -0.700191,-1.039849 -0.295711,-0.295791 -0.640076,-0.529192 -1.032868,-0.700125 -0.392859,-0.170999 -0.815702,-0.256538 -1.26861,-0.256538 -0.452895,0 -0.875738,0.08554 -1.26861,0.256538 -0.392792,0.170933 -0.737078,0.402047 -1.032868,0.697838 -0.295778,0.295791 -0.529179,0.642363 -0.700178,1.037495 -0.170933,0.39742 -0.256472,0.815716 -0.256472,1.259356 0,0.452907 0.08554,0.875751 0.256472,1.27325 0.170999,0.395146 0.4044,0.741705 0.700178,1.037496 0.29579,0.295791 0.640076,0.526839 1.032868,0.697838 0.392872,0.171012 0.815715,0.256472 1.26861,0.256472 0.351279,0 0.681669,-0.05078 0.991341,-0.15249 0.09774,-0.03211 0.193422,-0.06834 0.287052,-0.108755 l 5.29e-4,9.25e-4 1.08952,2.180679 c -0.260068,0.121038 -0.529549,0.221781 -0.808722,0.302693 -0.4945,0.145575 -1.014425,0.217153 -1.559773,0.217153 -0.785651,0 -1.525082,-0.150203 -2.218279,-0.450555 -0.693211,-0.300418 -1.296321,-0.707092 -1.809331,-1.220102 -0.512944,-0.512944 -0.919632,-1.116068 -1.22005,-1.809265 -0.300405,-0.69329 -0.45062,-1.432721 -0.45062,-2.218372 0,-0.785651 0.150215,-1.522742 0.45062,-2.211391 0.300418,-0.68857 0.707106,-1.291694 1.22005,-1.809265 0.51301,-0.517637 1.11612,-0.926599 1.809331,-1.227017 0.693197,-0.300418 1.432628,-0.4506205 2.218279,-0.4506205 0.610025,0 1.190051,0.092439 1.739961,0.2773345 0.549975,0.184828 1.056018,0.439013 1.51818,0.762514 v -0.831884 z" />
+                    <path id="path14"
+                        style="fill:#3232ff;fill-rule:evenodd;stroke-width:0.132209;image-rendering:auto;fill-opacity:1"
+                        d="m 55.406401,10.196435 v 4.921673 4.852434 c 0,0.535975 -0.101655,1.037337 -0.304979,1.504074 -0.203311,0.466737 -0.480579,0.875884 -0.831819,1.22711 -0.351226,0.351239 -0.760055,0.628507 -1.226792,0.831818 -0.466737,0.203311 -0.968416,0.304966 -1.504391,0.304966 h -3.909521 v -2.246188 h 3.909521 c 0.221886,0 0.432125,-0.04375 0.630715,-0.131561 0.198909,-0.0878 0.371996,-0.203311 0.519925,-0.346506 0.147915,-0.143196 0.265938,-0.314406 0.353751,-0.51301 0.08781,-0.198895 0.131548,-0.409134 0.131548,-0.630703 v -0.554867 c -0.434319,0.295844 -0.905776,0.529378 -1.414053,0.700271 -0.50829,0.170893 -1.048985,0.256498 -1.622097,0.256498 -0.72104,0 -1.40021,-0.138793 -2.038158,-0.416061 -0.637643,-0.277282 -1.194387,-0.653694 -1.670564,-1.12987 -0.475873,-0.475859 -0.852588,-1.032617 -1.12987,-1.670565 -0.277268,-0.63763 -0.415744,-1.317117 -0.415744,-2.03784 0,-0.51773 0.07143,-1.014359 0.214641,-1.490536 0.143513,-0.475872 0.346824,-0.919631 0.61025,-1.330973 0.263426,-0.411354 0.577528,-0.77863 0.942609,-1.102172 0.365082,-0.323541 0.764775,-0.59137 1.199412,-0.804121 l 0.859516,2.079698 c -0.471457,0.258707 -0.852588,0.62158 -1.143712,1.088317 -0.291441,0.46675 -0.436845,0.986675 -0.436845,1.559787 0,0.415744 0.07869,0.806328 0.235729,1.17141 0.157051,0.365081 0.372009,0.68389 0.644557,0.956451 0.272562,0.272866 0.591688,0.487825 0.956769,0.644862 0.365082,0.157051 0.755349,0.235729 1.17141,0.235729 0.415758,0 0.806329,-0.07868 1.17141,-0.235729 0.365082,-0.157037 0.686415,-0.371996 0.963684,-0.644862 0.277281,-0.272561 0.494434,-0.59137 0.651485,-0.956451 0.157051,-0.365082 0.235729,-0.755666 0.235729,-1.17141 l -0.01384,-4.921673 z" />
+                    <path id="path16"
+                        style="fill:#000000;fill-rule:evenodd;stroke-width:0.132209;image-rendering:auto;fill-opacity:1"
+                        d="m 28.322085,3.0604368 c 6.6e-5,-0.00305 0,-0.013737 0,-0.017756 0,-0.2162011 0.617362,-0.3914572 1.378898,-0.3914572 0.761537,0 1.378899,0.1752561 1.378899,0.3914572 0,0.00595 -5.29e-4,0.011872 -0.0015,0.017756 -0.110817,0.3355064 -1.074567,0.3514772 -1.377431,0.3514772 v 9.677766 c 0.397645,-0.0025 0.803857,-0.03788 1.209777,-0.107697 l -0.0039,1.019185 0.16222,0.06302 c -0.324877,2.044781 -1.592746,3.538014 -2.389119,5.307021 -0.544688,-2.194997 0.503504,-3.876588 1.570125,-5.241842 H 30.05071 c -0.579868,0.664997 -1.061968,1.504589 -1.438882,2.532063 -0.350459,-1.097121 -0.432455,-2.012245 0.06862,-2.532063 H 28.531081 V 13.00081 c -0.06982,-0.01428 -0.139494,-0.03024 -0.208996,-0.04797 z M 30.87829,18.210327 c -0.299466,1.11415 -0.788877,2.103231 -1.432258,2.980186 l 0.765053,-0.302454 0.596037,0.213504 c 0.261403,-1.125798 0.331672,-2.121291 0.07117,-2.891236 z m -0.02668,-2.802259 c -0.599845,1.976641 -2.050056,3.36141 -2.482009,5.346539 l 1.094226,0.08895 c 0.925184,-1.776239 2.135041,-3.258921 1.387783,-5.435489 z M 31.079882,3.3329854 v 9.6198586 c -0.181232,0.03156 -0.362186,0.05948 -0.542704,0.08235 V 3.4878019 c 0.209128,-0.016685 0.425329,-0.059679 0.542704,-0.1548165 z" />
+                    <path id="path18"
+                        style="fill:#3232ff;fill-rule:evenodd;stroke-width:0.132209;image-rendering:auto;fill-opacity:1"
+                        d="M 43.760733,10.195999 V 21.176657 H 41.32058 v -0.817989 -4.67234 c 0,-0.44364 -0.08547,-0.864209 -0.256471,-1.261629 -0.170999,-0.397433 -0.404401,-0.744071 -0.700192,-1.039849 -0.295711,-0.295791 -0.640076,-0.529192 -1.032855,-0.700125 -0.392872,-0.170999 -0.815715,-0.256538 -1.268623,-0.256538 -0.452895,0 -0.875738,0.08554 -1.26861,0.256538 -0.392792,0.170933 -0.737077,0.402047 -1.032855,0.697838 -0.295791,0.295791 -0.529192,0.642363 -0.700191,1.037495 -0.170933,0.39742 -0.256472,0.815716 -0.256472,1.259356 0,0.452907 0.08554,0.875751 0.256472,1.27325 0.170999,0.395146 0.4044,0.741705 0.700191,1.037496 0.295778,0.295791 0.640063,0.526839 1.032855,0.697838 0.392872,0.171012 0.815715,0.256472 1.26861,0.256472 0.351279,0 0.681669,-0.05078 0.991355,-0.15249 0.09773,-0.03211 0.193408,-0.06834 0.287038,-0.108755 l 5.29e-4,9.25e-4 1.089533,2.180679 c -0.260081,0.121038 -0.529549,0.221781 -0.808734,0.302693 -0.494501,0.145575 -1.014412,0.217153 -1.559774,0.217153 -0.785651,0 -1.525082,-0.150203 -2.218279,-0.450555 -0.693211,-0.300418 -1.296321,-0.707092 -1.809331,-1.220102 -0.512944,-0.512944 -0.919631,-1.116068 -1.220036,-1.809265 -0.300419,-0.69329 -0.450634,-1.432721 -0.450634,-2.218372 0,-0.785651 0.150215,-1.522742 0.450634,-2.211391 0.300405,-0.68857 0.707092,-1.291694 1.220036,-1.809265 0.51301,-0.517637 1.11612,-0.926599 1.809331,-1.227017 0.693197,-0.300418 1.432628,-0.4506205 2.218279,-0.4506205 0.610025,0 1.190065,0.092439 1.739961,0.2773345 0.549989,0.184828 1.056018,0.439013 1.518181,0.762514 v -0.831884 z" />
+                    <text xml:space="preserve"
+                        style="font-weight:bold;font-size:6.35px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:none;letter-spacing:0.724958px;stroke-width:0.264583;fill:#000000;fill-opacity:1"
+                        x="2.6024578" y="27.934715" id="text6235">
+                        <tspan id="tspan6233"
+                            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Helvetica;-inkscape-font-specification:'Helvetica, Normal';font-variant-ligatures:none;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583;fill:#000000;fill-opacity:1"
+                            x="2.6024578" y="27.934715" sodipodi:role="line">technology redefined</tspan>
+                    </text>
+                    <g id="g2685" transform="matrix(1.2495254,0,0,1.2495254,-14.044193,-1.2963612)">
+                        <text xml:space="preserve"
+                            style="font-weight:bold;font-size:1.939px;line-height:1.05;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:none;letter-spacing:0.181781px;fill:#000000;fill-opacity:1;stroke-width:0.181781"
+                            x="53.475307" y="6.6298814" id="text6235-0">
+                            <tspan id="tspan6233-2"
+                                style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.939px;font-family:Helvetica;-inkscape-font-specification:Helvetica;font-variant-ligatures:none;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke-width:0.181781"
+                                x="53.475307" y="6.6298814" sodipodi:role="line">R</tspan>
+                        </text>
+                        <circle
+                            style="font-variation-settings:normal;opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.149277;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;image-rendering:auto;stop-color:#000000;stop-opacity:1"
+                            id="path1436" cx="54.138741" cy="5.9232821" r="1.4741514" />
+                    </g>
+                </g>
+                <rect style="opacity:0;fill:#ff0000;fill-opacity:0;stroke:#000000;stroke-width:0.0512035" id="rect2726"
+                    width="65.550537" height="36.905956" x="-3.3249626" y="-2.1323779" />
+                <path style="opacity:0;fill:#b3b3b3;fill-opacity:0;stroke:#000000;stroke-width:1.50789"
+                    d="m 632.01821,419.56986 c -2.80088,-16.94529 0.3629,-37.39346 8.51579,-55.03932 5.04948,-10.92893 19.10295,-33.15458 22.1577,-35.04251 2.54543,-1.57317 1.72298,-3.78466 -1.40752,-3.78466 -3.98313,0 -14.93498,15.59266 -23.26731,33.12673 l -6.60053,13.8898 -2.01312,-8.05244 c -3.22696,-12.90775 -2.72444,-26.63672 1.21923,-33.30952 1.83804,-3.11001 2.68623,-5.65457 1.88486,-5.65457 -0.80794,0 -1.45703,-5.03812 -1.45703,-11.30915 0,-9.04731 -0.45237,-11.30914 -2.26183,-11.30914 -1.98713,0 -2.26183,-11.80747 -2.26183,-97.21992 v -97.21992 l 4.90063,-2.63053 c 7.14463,-3.83505 35.94776,-3.77036 43.16221,0.0969 4.49775,2.41103 4.82853,2.98702 2.85097,4.96458 -2.64198,2.64199 -11.68857,4.94454 -19.62518,4.99503 l -5.65457,0.036 v 95.21228 95.21229 l 12.06309,-0.82683 12.06309,-0.82682 v 9.56967 c 0,5.26334 0.63216,9.96039 1.40481,10.43791 1.76337,1.08982 -3.1186,19.02006 -9.04277,33.21176 -2.42922,5.81935 -11.45459,23.3037 -20.05636,38.85409 -15.48878,28.00082 -15.64861,28.21892 -16.57433,22.61829 z"
+                    id="path3678" transform="matrix(0.05120355,0,0,0.05120355,-3.3249625,-2.0551687)" />
+                <path style="opacity:0;fill:#b3b3b3;fill-opacity:0;stroke:#000000;stroke-width:1.50789"
+                    d="m 632.01821,419.56986 c -2.80088,-16.94529 0.3629,-37.39346 8.51579,-55.03932 5.04948,-10.92893 19.10295,-33.15458 22.1577,-35.04251 2.54543,-1.57317 1.72298,-3.78466 -1.40752,-3.78466 -3.98313,0 -14.93498,15.59266 -23.26731,33.12673 l -6.60053,13.8898 -2.01312,-8.05244 c -3.22696,-12.90775 -2.72444,-26.63672 1.21923,-33.30952 1.83804,-3.11001 2.68623,-5.65457 1.88486,-5.65457 -0.80794,0 -1.45703,-5.03812 -1.45703,-11.30915 0,-9.04731 -0.45237,-11.30914 -2.26183,-11.30914 -1.98713,0 -2.26183,-11.80747 -2.26183,-97.21992 v -97.21992 l 4.90063,-2.63053 c 7.14463,-3.83505 35.94776,-3.77036 43.16221,0.0969 4.49775,2.41103 4.82853,2.98702 2.85097,4.96458 -2.64198,2.64199 -11.68857,4.94454 -19.62518,4.99503 l -5.65457,0.036 v 95.21228 95.21229 l 12.06309,-0.82683 12.06309,-0.82682 v 9.56967 c 0,5.26334 0.63216,9.96039 1.40481,10.43791 1.76337,1.08982 -3.1186,19.02006 -9.04277,33.21176 -2.42922,5.81935 -11.45459,23.3037 -20.05636,38.85409 -15.48878,28.00082 -15.64861,28.21892 -16.57433,22.61829 z"
+                    id="path3791" transform="matrix(0.05120355,0,0,0.05120355,-3.3249625,-2.0551687)" />
+                <path style="opacity:0;fill:#b3b3b3;fill-opacity:0;stroke:#000000;stroke-width:1.50789"
+                    d="m 632.01821,419.56986 c -2.80088,-16.94529 0.3629,-37.39346 8.51579,-55.03932 5.04948,-10.92893 19.10295,-33.15458 22.1577,-35.04251 2.54543,-1.57317 1.72298,-3.78466 -1.40752,-3.78466 -3.98313,0 -14.93498,15.59266 -23.26731,33.12673 l -6.60053,13.8898 -2.01312,-8.05244 c -3.22696,-12.90775 -2.72444,-26.63672 1.21923,-33.30952 1.83804,-3.11001 2.68623,-5.65457 1.88486,-5.65457 -0.80794,0 -1.45703,-5.03812 -1.45703,-11.30915 0,-9.04731 -0.45237,-11.30914 -2.26183,-11.30914 -1.98713,0 -2.26183,-11.80747 -2.26183,-97.21992 v -97.21992 l 4.90063,-2.63053 c 7.14463,-3.83505 35.94776,-3.77036 43.16221,0.0969 4.49775,2.41103 4.82853,2.98702 2.85097,4.96458 -2.64198,2.64199 -11.68857,4.94454 -19.62518,4.99503 l -5.65457,0.036 v 95.21228 95.21229 l 12.06309,-0.82683 12.06309,-0.82682 v 9.56967 c 0,5.26334 0.63216,9.96039 1.40481,10.43791 1.76337,1.08982 -3.1186,19.02006 -9.04277,33.21176 -2.42922,5.81935 -11.45459,23.3037 -20.05636,38.85409 -15.48878,28.00082 -15.64861,28.21892 -16.57433,22.61829 z"
+                    id="path3867" transform="matrix(0.05120355,0,0,0.05120355,-3.3249625,-2.0551687)" />
+                <path style="opacity:0;fill:#b3b3b3;fill-opacity:0;stroke:#000000;stroke-width:1.50789"
+                    d="m 632.01821,419.56986 c -2.80088,-16.94529 0.3629,-37.39346 8.51579,-55.03932 5.04948,-10.92893 19.10295,-33.15458 22.1577,-35.04251 2.54543,-1.57317 1.72298,-3.78466 -1.40752,-3.78466 -3.98313,0 -14.93498,15.59266 -23.26731,33.12673 l -6.60053,13.8898 -2.01312,-8.05244 c -3.22696,-12.90775 -2.72444,-26.63672 1.21923,-33.30952 1.83804,-3.11001 2.68623,-5.65457 1.88486,-5.65457 -0.80794,0 -1.45703,-5.03812 -1.45703,-11.30915 0,-9.04731 -0.45237,-11.30914 -2.26183,-11.30914 -1.98713,0 -2.26183,-11.80747 -2.26183,-97.21992 v -97.21992 l 4.90063,-2.63053 c 7.14463,-3.83505 35.94776,-3.77036 43.16221,0.0969 4.49775,2.41103 4.82853,2.98702 2.85097,4.96458 -2.64198,2.64199 -11.68857,4.94454 -19.62518,4.99503 l -5.65457,0.036 v 95.21228 95.21229 l 12.06309,-0.82683 12.06309,-0.82682 v 9.56967 c 0,5.26334 0.63216,9.96039 1.40481,10.43791 1.76337,1.08982 -3.1186,19.02006 -9.04277,33.21176 -2.42922,5.81935 -11.45459,23.3037 -20.05636,38.85409 -15.48878,28.00082 -15.64861,28.21892 -16.57433,22.61829 z"
+                    id="path3906" transform="matrix(0.05120355,0,0,0.05120355,-3.3249625,-2.0551687)" />
+                <path style="opacity:0;fill:#b3b3b3;fill-opacity:0;stroke:#000000;stroke-width:1.50789"
+                    d="m 632.01821,419.56986 c -2.80088,-16.94529 0.3629,-37.39346 8.51579,-55.03932 5.04948,-10.92893 19.10295,-33.15458 22.1577,-35.04251 2.54543,-1.57317 1.72298,-3.78466 -1.40752,-3.78466 -3.98313,0 -14.93498,15.59266 -23.26731,33.12673 l -6.60053,13.8898 -2.01312,-8.05244 c -3.22696,-12.90775 -2.72444,-26.63672 1.21923,-33.30952 1.83804,-3.11001 2.68623,-5.65457 1.88486,-5.65457 -0.80794,0 -1.45703,-5.03812 -1.45703,-11.30915 0,-9.04731 -0.45237,-11.30914 -2.26183,-11.30914 -1.98713,0 -2.26183,-11.80747 -2.26183,-97.21992 v -97.21992 l 4.90063,-2.63053 c 7.14463,-3.83505 35.94776,-3.77036 43.16221,0.0969 4.49775,2.41103 4.82853,2.98702 2.85097,4.96458 -2.64198,2.64199 -11.68857,4.94454 -19.62518,4.99503 l -5.65457,0.036 v 95.21228 95.21229 l 12.06309,-0.82683 12.06309,-0.82682 v 9.56967 c 0,5.26334 0.63216,9.96039 1.40481,10.43791 1.76337,1.08982 -3.1186,19.02006 -9.04277,33.21176 -2.42922,5.81935 -11.45459,23.3037 -20.05636,38.85409 -15.48878,28.00082 -15.64861,28.21892 -16.57433,22.61829 z"
+                    id="path3945" transform="matrix(0.05120355,0,0,0.05120355,-3.3249625,-2.0551687)" />
+                <path style="opacity:0;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.50789"
+                    d="m 632.01821,419.56986 c -2.80088,-16.94529 0.3629,-37.39346 8.51579,-55.03932 5.04948,-10.92893 19.10295,-33.15458 22.1577,-35.04251 2.54543,-1.57317 1.72298,-3.78466 -1.40752,-3.78466 -3.98313,0 -14.93498,15.59266 -23.26731,33.12673 l -6.60053,13.8898 -2.01312,-8.05244 c -3.22696,-12.90775 -2.72444,-26.63672 1.21923,-33.30952 1.83804,-3.11001 2.68623,-5.65457 1.88486,-5.65457 -0.80794,0 -1.45703,-5.03812 -1.45703,-11.30915 0,-9.04731 -0.45237,-11.30914 -2.26183,-11.30914 -1.98713,0 -2.26183,-11.80747 -2.26183,-97.21992 v -97.21992 l 4.90063,-2.63053 c 7.14463,-3.83505 35.94776,-3.77036 43.16221,0.0969 4.49775,2.41103 4.82853,2.98702 2.85097,4.96458 -2.64198,2.64199 -11.68857,4.94454 -19.62518,4.99503 l -5.65457,0.036 v 95.21228 95.21229 l 12.06309,-0.82683 12.06309,-0.82682 v 9.56967 c 0,5.26334 0.63216,9.96039 1.40481,10.43791 1.76337,1.08982 -3.1186,19.02006 -9.04277,33.21176 -2.42922,5.81935 -11.45459,23.3037 -20.05636,38.85409 -15.48878,28.00082 -15.64861,28.21892 -16.57433,22.61829 z"
+                    id="path3984" transform="matrix(0.05120355,0,0,0.05120355,-3.3249625,-2.0551687)" />
+            </g>
+            <path style="opacity:0;fill:#00ff00;fill-opacity:0;stroke:#000000;stroke-width:0.271988;stroke-opacity:1"
+                d="m 110.97095,116.62616 c -0.82964,-0.47579 -1.18202,-1.06051 -1.37088,-2.27471 -0.50457,-3.24396 2.02975,-5.63369 4.08982,-3.85648 0.88732,0.76548 1.23144,2.23067 0.92258,3.92812 -0.38128,2.09546 -2.05917,3.11055 -3.64152,2.20307 z"
+                id="path43800" transform="matrix(0.26458333,0,0,0.26458333,2.649931,2.6512236)" />
+        </g>
+    </svg>
+
+    <div id="brightness"></div>
+    <div class="screen">
+        <textarea id='console'></textarea>
+        <div class="tab">
+            <button id="jogbtn" class="tablinks" onclick="openTab(event, 'jog')">Jog</button>
+            <button id="runbtn" class="tablinks" onclick="openTab(event, 'run')">Run</button>
+            <!-- <button id="settingsbtn" class="tablinks" onclick="openTab(event, 'settings')">Settings</button> -->
+        </div>
+        <div id="dro" class="dro">
+            <label id='labelXw' class='drolabel'>X</label><input type="number" id="Xw" class='wcs'>
+            <label id='labelYw' class='drolabel'>Y</label><input type="number" id="Yw" class='wcs'>
+            <label id='labelZw' class='drolabel'>Z</label><input type="number" id="Zw" class='wcs'>
+            <label id='labelAw' class='drolabel'>A</label><input type="number" id="Aw" class='wcs'>
+            <label id='labelXs' class='drolabelm'>Xm</label><input type="number" id="Xs" class='mcs'>
+            <label id='labelYs' class='drolabelm'>Ym</label><input type="number" id="Ys" class='mcs'>
+            <label id='labelZs' class='drolabelm'>Zm</label><input type="number" id="Zs" class='mcs'>
+            <label id='labelAs' class='drolabelm'>Am</label><input type="number" id="As" class='mcs'>
+
+            <div id="state"></div>
+
+            <div id="woffset"></div>
+
+
+
+            <button id="x0" class="drobtn" onclick="x0();">X=0</button>
+            <button id="y0" class="drobtn" onclick="y0();">Y=0</button>
+            <button id="z0" class="drobtn" onclick="z0();">Z=0</button>
+            <button id="a0" class="drobtn" onclick="a0();">A=0</button>
+
+            <button id="gox0" class="drobtn" onclick="gox0();">&#10148;X0</button>
+            <button id="goy0" class="drobtn" onclick="goy0();">&#10148;Y0</button>
+            <button id="goz0" class="drobtn" onclick="goz0();">&#10148;Z0</button>
+            <button id="goa0" class="drobtn" onclick="goa0();">&#10148;A0</button>
+
+        </div>
+        <div id="fsdetails" class="fsdetails">
+            <div id="Feed"></div>
+            <div id="labelFeed">mm/min</div>
+            <div id="Rpm"></div>
+            <div id="labelRpm">rpm</div>
+            <div id="fileName"></div>
+            <div id="fileProgress"></div>
+            <div id="ln"></div>
+            <div id="elapsedTime"></div>
+        </div>
+
+        <div id="states" class="states">
+            <div id="sp" class="AccPn">spindle</div>
+            <div id="clnt" class="AccPn">coolant</div>
+            <div id="pr" class="AccPn Pn">probe</div>
+            <div id="xl" class="AccPn Pn">x-lim</div>
+            <div id="yl" class="AccPn Pn">y-lim</div>
+            <div id="zl" class="AccPn Pn">z-lim</div>
+            <div id="door" class="AccPn Pn">door</div>
+            <div id="driveAl" class="AccPn Pn">drive-Al</div>
+            <div id="eStop" class="AccPn Pn">E-Stop</div>
+        </div>
+
+
+        <div>
+            <button class='cmdbtn' id="reset" onclick="reset();">Reset</button>
+            <button class='cmdbtn' id="unlock" onclick="unlock();">Unlock</button>
+            <button class='cmdbtn' id="home" onclick="home();">Home</button>
+            <button class='cmdbtn' id="start" onclick="start();">Start</button>
+            <button class='cmdbtn' id="hold" onclick="pause();">Hold</button>
+            <button class='cmdbtn' id="probe" onclick="probe();">Probe</button>
+            <button class='cmdbtn' id="spindle" onclick="spindle();">Spindle</button>
+            <button class='cmdbtn' id="coolant" onclick="coolant();">Coolant</button>
+            <button class='cmdbtn' id="tool" onclick="tool();">Tool</button>
+        </div>
+
+        <div id="jog" class="tabcontent">
+
+            <button id="ym" onclick="Ym();">Y-</button>
+            <button id="yp" onclick="Yp();">Y+</button>
+            <button id="xm" onclick="Xm();">X-</button>
+            <button id="xp" onclick="Xp();">X+</button>
+            <button id="zm" onclick="Zm();">Z-</button>
+            <button id="zp" onclick="Zp();">Z+</button>
+            <button id="am" onclick="Am();">A-</button>
+            <button id="ap" onclick="Ap();">A+</button>
+            <button id="bm" onclick="Bm();">B-</button>
+            <button id="bp" onclick="Bp();">B+</button>
+
+            <input type='text' class='mdi' id='mdi1' onfocus="this.value=''; inputFocused();"
+                onblur="inputBlurred();"><button onclick='mdi1();' class='mdibtn' id='mdi1btn'>MDI1</button>
+            <input type='text' class='mdi' id='mdi2' onfocus="this.value=''; inputFocused();"
+                onblur="inputBlurred();"><button onclick='mdi2();' class='mdibtn' id='mdi2btn'>MDI2</button>
+
+            <div id="radio-buttons" class="radio-toolbar">
+                <input type="radio" id="jd0" name="jogdistance" value="0.001" onclick="radioClick(this);">
+                <label id="l0" for="jd0">.001</label>
+
+                <input type="radio" id="jd1" name="jogdistance" value="0.01" onclick="radioClick(this);">
+                <label id="l1" for="jd1">.01</label>
+
+                <input type="radio" id="jd2" name="jogdistance" value="0.1" onclick="radioClick(this);">
+                <label id="l2" for="jd2">.1</label>
+
+                <input type="radio" id="jd3" name="jogdistance" value="1" onclick="radioClick(this);">
+                <label id="l3" for="jd3">1</label>
+
+                <input type="radio" id="jd4" name="jogdistance" value="5" onclick="radioClick(this);">
+                <label id="l4" for="jd4">5</label>
+
+                <input type="radio" id="jd5" name="jogdistance" value="25" onclick="radioClick(this);">
+                <label id="l5" for="jd5">25</label>
+            </div>
+        </div>
+
+        <div id="run" class="tabcontent">
+
+            <button id="fovm" class="ovbtn" onclick="fovm();">F-</button>
+            <button id="fovr" class='ovbtn' onclick="fovr();"></button>
+            <button id="fovp" class='ovbtn' onclick="fovp();">F+</button>
+            <button id="rov25" class='ovbtn' onclick="rov25();">R25</button>
+            <button id="rov50" class='ovbtn' onclick="rov50();">R50</button>
+            <button id="rov100" class='ovbtn' onclick="rov100();">R100</button>
+            <button id="sovm" class='ovbtn' onclick="sovm();">S-</button>
+            <button id="sovr" class='ovbtn' onclick="sovr();"></button>
+            <button id="sovp" class='ovbtn' onclick="sovp();">S+</button>
+
+            <div id='tablediv'>
+                <table id='filestable' class='fileslayout'>
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Size</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabledata"></tbody>
+                </table>
+                <div id='progressborder'>
+                    <div id='sdsize'></div>
+                    <div id='sdpercent'></div>
+                    <div id='sdprogressbar'></div>
+                </div>
+            </div>
+            <button id='backbtn' onclick='backOneLevel();'>Back</button>
+            <button id='reloadbtn' onclick='reloadList();'>Reload</button>
+        </div>
+
+        <div id="settings" class="tabcontent">
+
+        </div>
+    </div>
+    <script>
+        //start of main app code responsible for communication with controller
+        //section for user customization
+        const wsPort = 81;      //websockets port. default 81
+        var jogDistanceArray = [0.001, 0.01, 0.1, 1, 5, 25]; //distances are in mm. please don't change this unless you find out its relevance at other places in code
+        var pollInterval = 250; //use 300-500 for wifi based communication, 150 for wired ethernet
+        const probethickness = 19.20; // height of Z-probe plate
+        var jogSpeed = 3000; //in mm/min. this speed is applicable while jogging
+        var positionSpeed = 3000; //in mm/min. this speed is applicable while directly going to X0, Y0, Z0, etc.
+        //Be cautious to use Y- and Y+ jog buttons as they are reversed to suit "valay" mini VMC machines which is used for testing this code.
+
+        //Following code is not for user customization in general
+        //main code
+        const serverUrl = document.location.host;
+
+        var toggleFullScreen = function () {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.documentElement.requestFullscreen();
+            }
+        };
+        var jogDistanceIndex, selectedFile, fileJson, fileInfo, mcx, mcy, mcz, mca, wcx, wcy, wcz, wca, wcox, wcoy, wcoz, wcoa, timer, sp, cl;
+
+        function openTab(evt, tabName) {
+            // Declare all variables
+            var i, tabcontent, tablinks;
+
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName('tabcontent');
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.visibility = 'hidden';
+            }
+
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName('tablinks');
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(' active', '');
+            }
+
+            // Show the current tab, and add an "active" class to the link that opened the tab
+            document.getElementById(tabName).style.visibility = 'visible';
+            evt.currentTarget.className += ' active';
+        }
+        document.getElementById('jogbtn').click(); //initial click on 'jog' tab to highlight it
+        document.getElementById('ln').innerHTML = localStorage.getItem('ln', ln); //show last running line number
+        document.getElementById('fileName').innerHTML = localStorage.getItem('fileName', fileName);
+        document.getElementById('elapsedTime').innerHTML = localStorage.getItem('timer', timer);
+
+
+        if (window.WebSocket === undefined) {
+            console.log('sockets not supported');
+        } else {
+            if (typeof String.prototype.startsWith != 'function') {
+                String.prototype.startsWith = function (str) {
+                    return this.indexOf(str) == 0;
+                };
+            }
+            window.addEventListener('load', onLoad, false);
+        }
+
+        function writeConsole(cData) {
+            var consoleBox = document.getElementById('console');
+            consoleBox.value += '\n' + cData;
+            consoleBox.scrollTop = consoleBox.scrollHeight;
+            //console.log(cData);
+        }
+
+        var wsUri = 'ws://' + serverUrl + ':' + wsPort;
+        function onLoad() {
+            websocket = new WebSocket(wsUri);
+
+            websocket.onopen = function (evt) { onOpen(evt) };
+            websocket.onClose = function (evt) { onClose(evt) };
+            websocket.onmessage = function (evt) { onMessage(evt) };
+            websocket.onerror = function (evt) { onError(evt) };
+        }
+
+        function onOpen(evt) {
+            //websocket.send('\030'); //send reset to start communication when autoreport is on
+            //websocket.send('$I\n');
+            //websocket.send('$G\n');
+            websocket.send('\x87'); // full report request for quick coordinates appearance on HMI
+            if (!evt) {
+                document.getElementById('state').innerHTML = 'DISCONNECTED';
+            }
+            setInterval(function () {
+                websocket.send('?');     //instead use $481=150 for autoreport at 150ms interval
+            }, pollInterval);
+
+            var currentJogDistance = 0;
+            window.radioClick = function (myRadio) {
+                currentJogDistance = Number(myRadio.value);
+                jogDistanceIndex = jogDistanceArray.indexOf(currentJogDistance);
+            }
+            window.increaseJogDistance = function () {
+                if (jogDistanceIndex < (jogDistanceArray.length - 1)) {
+                    jogDistanceIndex++;
+                }
+                document.getElementById('jd' + jogDistanceIndex).click();
+            }
+            window.decreaseJogDistance = function () {
+                if (jogDistanceIndex > 0) {
+                    jogDistanceIndex--;
+                }
+                document.getElementById('jd' + jogDistanceIndex).click();
+            }
+            document.getElementById('jd3').click(); //initial click on button "1" as default jog distance
+
+            window.Yp = function () {
+                websocket.send('$J=G91Y' + currentJogDistance + 'F' + jogSpeed + '\n');
+            }
+            window.Ym = function () {
+                websocket.send('$J=G91Y-' + currentJogDistance + 'F' + jogSpeed + '\n');
+            }
+            window.Xp = function () {
+                websocket.send('$J=G91X' + currentJogDistance + 'F' + jogSpeed + '\n');
+            }
+            window.Xm = function () {
+                websocket.send('$J=G91X-' + currentJogDistance + 'F' + jogSpeed + '\n');
+            }
+            window.Zp = function () {
+                websocket.send('$J=G91Z' + currentJogDistance + 'F' + jogSpeed + '\n');
+            }
+            window.Zm = function () {
+                websocket.send('$J=G91Z-' + currentJogDistance + 'F' + jogSpeed + '\n');
+            }
+            window.Ap = function () {
+                websocket.send('$J=G91A' + currentJogDistance + 'F' + jogSpeed + '\n');
+            }
+            window.Am = function () {
+                websocket.send('$J=G91A-' + currentJogDistance + 'F' + jogSpeed + '\n');
+            }
+            window.Bp = function () {
+                websocket.send('$J=G91B' + currentJogDistance + 'F' + jogSpeed + '\n');
+            }
+            window.Bm = function () {
+                websocket.send('$J=G91B-' + currentJogDistance + 'F' + jogSpeed + '\n');
+            }
+            window.jogCancel = function () {
+                websocket.send('\x85');
+            }
+
+            window.fovm = function () {
+                websocket.send('\x92');
+            }
+            window.fovr = function () {
+                websocket.send('\x90');
+            }
+            window.fovp = function () {
+                websocket.send('\x91');
+            }
+            window.rov25 = function () {
+                websocket.send('\x97');
+            }
+            window.rov50 = function () {
+                websocket.send('\x96');
+            }
+            window.rov100 = function () {
+                websocket.send('\x95');
+            }
+            window.sovm = function () {
+                websocket.send('\x9B');
+            }
+            window.sovr = function () {
+                websocket.send('\x99');
+            }
+            window.sovp = function () {
+                websocket.send('\x9A');
+            }
+
+            window.mdi1 = function () {
+                var mdi1 = document.getElementById('mdi1').value;
+                localStorage.setItem('mymdi1', mdi1); //code for making text input persistant
+                websocket.send(mdi1 + '\n');
+                // websocket.send('$G\n'); //better strategy can be used to get G54/55 etc states
+            }
+            window.mdi2 = function () {
+                var mdi2 = document.getElementById('mdi2').value;
+                localStorage.setItem('mymdi2', mdi2); //code for making text input persistant
+                websocket.send(mdi2 + '\n');
+                // websocket.send('$G\n'); //better strategy can be used to get G54/55 etc states
+            }
+
+            window.x0 = function () {
+                websocket.send('G10P0L20X0\n');
+            }
+            window.y0 = function () {
+                websocket.send('G10P0L20Y0\n');
+            }
+            window.z0 = function () {
+                websocket.send('G10P0L20Z0\n');
+            }
+            window.a0 = function () {
+                websocket.send('G10P0L20A0\n');
+            }
+            window.b0 = function () {
+                websocket.send('G10P0L20B0\n');
+            }
+            window.gox0 = function () {
+                websocket.send('$J=G90X0F' + positionSpeed + '\n');
+            }
+            window.goy0 = function () {
+                websocket.send('$J=G90Y0F' + positionSpeed + '\n');
+            }
+            window.goz0 = function () {
+                websocket.send('$J=G90Z0F' + positionSpeed + '\n');
+            }
+            window.goa0 = function () {
+                websocket.send('$J=G90A0F' + positionSpeed + '\n');
+            }
+            window.gob0 = function () {
+                websocket.send('$J=G90B0F' + positionSpeed + '\n');
+            }
+
+            window.reset = function () {
+                // console.log('Reset sent');
+                websocket.send('\030'); //for reset
+                websocket.send('\x87'); //for requesting complete report to set the accessories state right
+                //websocket.send('\x19'); //for stop. not as harsh as reset. grblHAL feature. Spindle doesn't stop. Builds after January '22 resolves spindle issue.
+                timePause();
+                websocket.send('$G\n');
+            }
+
+            window.unlock = function () {
+                // console.log('Unlock sent');
+                websocket.send('$X\n');
+            }
+
+            window.home = function () {
+                // console.log('Home sent');
+                websocket.send('$H\n');
+            }
+
+            window.spindle = function () {
+                // if ((document.getElementById('state').innerHTML) == 'Idle') {
+                //     websocket.send('S6000 M3\n');
+                // }
+                // else {
+                //     websocket.send('\x9e');
+                // }
+                if (sp && (document.getElementById('state').innerHTML) == 'Idle') {
+                    websocket.send('M5\n');
+                }
+                else if ((document.getElementById('state').innerHTML) == 'Idle') {
+                    websocket.send('S6000 M3\n');
+                }
+                else {
+                    websocket.send('\x9e');
+                }
+            }
+
+            window.coolant = function () {
+                websocket.send('\xa0');
+                //websocket.send('\xa1');
+            }
+
+            window.start = function () {
+                if ((document.getElementById('state').innerHTML) == 'Hold:0') {
+                    websocket.send('~');
+                    timeStart();
+                    writeConsole('Program resumed.')
+                }
+                else if ((document.getElementById('state').innerHTML) == 'Idle') {
+                    websocket.send('$F=/' + selectedFile + '\n');
+
+                    setTimeout(function () {
+                        if ((document.getElementById('state').innerHTML) == 'Run') {
+                            timeReset();
+                            timeStart();
+                            document.getElementById('ln').innerHTML = "";
+                            writeConsole('Started: ' + selectedFile);
+                        }
+                    }, pollInterval);
+                }
+            }
+
+            window.pause = function () {
+                websocket.send('!')
+                timePause();
+                writeConsole('Feedhold. Press Spindle and/or Coolant buttons to toggle them ON/OFF while on feedhold. Press start to resume');
+            }
+
+            window.tool = function () {
+                websocket.send('\xA3'); //for stop. not as harsh as reset. grblHAL feature.
+                timePause();
+            }
+
+            window.probe = function () {
+                websocket.send('G91\n');
+                websocket.send('G38.2 Z-20 F50\n');
+                websocket.send('G90\n');
+                websocket.send('G10 L20 P0 Z' + probethickness + '\n');
+                websocket.send('G91\n');
+                websocket.send('G0 Z50\n');
+                websocket.send('G90\n');
+            }
+        }
+
+        function onClose(evt) {
+            console.log('WebSockets Not connected');
+            document.getElementById('state').innerHTML = 'DISCONNECTED';
+        }
+
+        function onMessage(evt) {
+
+            // console.log(evt.data);
+            if (evt.data[0] == '<') { //These are realtime status reports
+                //Code for getting status and modify its style dynamically
+                var splitString = evt.data.split('|');
+                var state = splitString[0]; //select first element of array
+                state = state.substring(1); //remove initial '<' from machine state string
+                document.getElementById('state').innerHTML = state;
+                switch (state) {
+                    case 'Idle':
+                        document.getElementById('state').style.color = 'lightgreen';
+                        document.getElementById('console').style.color = 'rgb(50, 50, 50)';
+                        break;
+                    case 'Alarm':
+                        document.getElementById('console').style.color = 'maroon';
+                    case 'Check':
+                        document.getElementById('state').style.color = 'red';
+                        break;
+                    case 'Jog':
+                        document.getElementById('state').style.color = 'gold';
+                        break;
+                    case 'Run':
+                    case 'Home':
+                        document.getElementById('state').style.color = 'white';
+                        break;
+                    case 'Hold:0':
+                    case 'Hold:1':
+                        document.getElementById('state').style.color = 'pink';
+                        break;
+                    case 'Door':
+                        break;
+                    case 'Sleep':
+                        document.getElementById('state').style.color = 'lightgrey';
+                        break;
+                }
+                var indexwco = splitString.findIndex(element => element.includes('WCO:'));
+                var wco = splitString[indexwco];
+                if (wco) {  //used nested if to debug a warning regarding substring property of undefined
+                    wco = wco.substring(4);
+                    wco = wco.replace('>', ''); //remove last ">" which may arraive randomly
+                    wco = wco.split(',');
+                    wcox = parseFloat(wco[0]);
+                    wcoy = parseFloat(wco[1]);
+                    wcoz = parseFloat(wco[2]);
+                    wcoa = parseFloat(wco[3]);
+                }
+                var indexmpos = splitString.findIndex(element => element.includes('MPos:'));
+                var mpos = splitString[indexmpos];
+                if (mpos) {  //used nested if to debug a warning regarding substring property of undefined
+                    mpos = mpos.substring(5);
+                    mpos = mpos.split(',');
+                    mcx = parseFloat(mpos[0]);
+                    mcy = parseFloat(mpos[1]);
+                    mcz = parseFloat(mpos[2]);
+                    if (mpos[3]) {
+                        mca = parseFloat(mpos[3]);
+                        //console.log(mca);
+                    }
+                    document.getElementById('Xs').value = mcx.toFixed(3);
+                    document.getElementById('Ys').value = mcy.toFixed(3);
+                    document.getElementById('Zs').value = mcz.toFixed(3);
+                    if (mca || mca == 0) {
+                        document.getElementById('As').value = mca.toFixed(3);
+                    }
+                    wcx = mcx - wcox;
+                    wcy = mcy - wcoy;
+                    wcz = mcz - wcoz;
+                    wca = mca - wcoa;
+                    if (wcx || wcx == 0)
+                        document.getElementById('Xw').value = wcx.toFixed(3);
+                    if (wcy || wcy == 0)
+                        document.getElementById('Yw').value = wcy.toFixed(3);
+                    if (wcz || wcz == 0)
+                        document.getElementById('Zw').value = wcz.toFixed(3);
+                    if (wca || wca == 0)
+                        document.getElementById('Aw').value = wca.toFixed(3);
+                }
+
+                var indexfs = splitString.findIndex(element => element.includes('FS:'));
+                var fs = splitString[indexfs];
+                if (fs) {  //used nested if to debug a warning regarding substring property of undefined
+                    fs = fs.substring(3);
+                    fs = fs.split(',');
+                    var feed = parseInt(fs[0]);
+                    var rpm = parseInt(fs[1]);
+                    document.getElementById('Feed').innerHTML = feed;
+                    document.getElementById('Rpm').innerHTML = rpm;
+                }
+
+                var indexwcs = splitString.findIndex(element => element.includes('WCS:'));
+                var wcs = splitString[indexwcs];
+                if (wcs) {  //used nested if to debug a warning regarding substring property of undefined
+                    wcs = wcs.substring(4);
+                    wcs = wcs.replace('>', '');
+                    document.getElementById('woffset').innerHTML = wcs;
+                }
+
+                var indexov = splitString.findIndex(element => element.includes('Ov:'));
+                var ov = splitString[indexov];
+                if (ov) {
+                    ov = ov.substring(3);
+                    ov = ov.replace('>', ''); //remove last ">" which may arraive randomly
+                    ov = ov.split(',');
+                    var feedov = parseFloat(ov[0]);
+                    var rapidov = parseFloat(ov[1]);
+                    var spindleov = parseFloat(ov[2]);
+                    document.getElementById('fovr').innerHTML = (feedov + '%');
+                    if (feedov != 100) {
+                        document.getElementById('fovr').style.backgroundColor = 'orange';
+                        document.getElementById('fovr').style.color = 'rgb(50, 50, 50)';
+
+                    }
+                    else {
+                        document.getElementById('fovr').style.backgroundColor = 'rgb(50, 50, 50)';
+                        document.getElementById('fovr').style.color = 'orange';
+
+                    };
+                    document.getElementById('sovr').innerHTML = (spindleov + '%');
+                    if (spindleov != 100) {
+                        document.getElementById('sovr').style.backgroundColor = 'orange';
+                        document.getElementById('sovr').style.color = 'rgb(50, 50, 50)';
+                    }
+                    else {
+                        document.getElementById('sovr').style.backgroundColor = 'rgb(50, 50, 50)';
+                        document.getElementById('sovr').style.color = 'orange';
+                    };
+                    if (rapidov == 25) {
+                        document.getElementById('rov25').style.color = 'orange';
+                        document.getElementById('rov50').style.color = 'lightgrey';
+                        document.getElementById('rov100').style.color = 'lightgrey';
+                    }
+                    else if (rapidov == 50) {
+                        document.getElementById('rov25').style.color = 'lightgrey';
+                        document.getElementById('rov50').style.color = 'orange';
+                        document.getElementById('rov100').style.color = 'lightgrey';
+                    }
+                    else if (rapidov == 100) {
+                        document.getElementById('rov25').style.color = 'lightgrey';
+                        document.getElementById('rov50').style.color = 'lightgrey';
+                        document.getElementById('rov100').style.color = 'orange';
+                    }
+                }
+
+                var indexln = splitString.findIndex(element => element.includes('Ln:'));
+                var ln = splitString[indexln];
+                if (ln) {
+                    ln = ln.substring(3);
+                    ln = ln.replace('>', ''); //remove last ">" which may arraive randomly
+                    document.getElementById('ln').innerHTML = ln;
+                    localStorage.setItem('ln', ln);
+                }
+
+                var indexpn = splitString.findIndex(element => element.includes('Pn:'));
+                var pn = splitString[indexpn];
+                if (pn) {
+                    var pn = pn.substring(3);
+                    var pn = pn.replace('>', ''); //remove last ">" which may arraive randomly
+                    var pr = pn.includes('P');
+                    var xl = pn.includes('X');
+                    var yl = pn.includes('Y');
+                    var zl = pn.includes('Z');
+                    var door = pn.includes('D');
+                    var driveAl = pn.includes('F') || pn.includes('M'); //old builds use M and new builds use F letters
+                    var eStop = pn.includes('E');
+                    if (pr) { document.getElementById('pr').style.background = 'orange'; }
+                    else { document.getElementById('pr').style.background = 'grey'; }
+                    if (xl) { document.getElementById('xl').style.background = 'orange'; }
+                    else { document.getElementById('xl').style.background = 'grey'; }
+                    if (yl) { document.getElementById('yl').style.background = 'orange'; }
+                    else { document.getElementById('yl').style.background = 'grey'; }
+                    if (zl) { document.getElementById('zl').style.background = 'orange'; }
+                    else { document.getElementById('zl').style.background = 'grey'; }
+                    if (door) { document.getElementById('door').style.background = 'orange'; }
+                    else { document.getElementById('door').style.background = 'grey'; }
+                    if (driveAl) { document.getElementById('driveAl').style.background = 'orange'; }
+                    else { document.getElementById('driveAl').style.background = 'grey'; }
+                    if (eStop) { document.getElementById('eStop').style.background = 'orange'; }
+                    else { document.getElementById('eStop').style.background = 'grey'; }
+
+                }
+                else {
+                    document.getElementById('pr').style.background = 'grey';
+                    document.getElementById('xl').style.background = 'grey';
+                    document.getElementById('yl').style.background = 'grey';
+                    document.getElementById('zl').style.background = 'grey';
+                    document.getElementById('door').style.background = 'grey';
+                    document.getElementById('driveAl').style.background = 'grey';
+                    document.getElementById('eStop').style.background = 'grey';
+                }
+
+                var indexa = splitString.findIndex(element => element.includes('A:'));
+                var a = splitString[indexa];
+                if (a) {
+                    a = a.substring(0, 5);
+                    sp = a.includes('S');
+                    cl = a.includes('M') || a.includes('F');
+                    if (sp) { document.getElementById('sp').style.background = 'orange'; }
+                    else { document.getElementById('sp').style.background = 'grey'; }
+                    if (cl) { document.getElementById('clnt').style.background = 'orange'; }
+                    else { document.getElementById('clnt').style.background = 'grey'; }
+                }
+
+                var indexsd = splitString.findIndex(element => element.includes('SD:'));
+                var sd = splitString[indexsd];
+                if (sd) {  //used nested if to debug a warning regarding substring property of undefined
+                    sd = sd.substring(3);
+                    sd = sd.replace(/[/]/, ''); //remove initial "/" from file /path/name
+                    sd = sd.split(/[,>]/);
+                    var fileProgress = parseFloat(sd[0]).toFixed(1);
+                    var fileName = sd[1];
+                    localStorage.setItem('fileName', fileName); //code for making text input persistant
+                    document.getElementById('fileName').innerHTML = fileName;
+                    if ((document.getElementById('state').innerHTML) == 'Run' || 'Hold:0') {
+                        document.getElementById('fileProgress').innerHTML = (fileProgress + '%');
+                        document.getElementById('fileName').style.color = 'cyan';
+                        document.getElementById('fileProgress').style.color = 'cyan';
+                    }
+                    else {
+                        document.getElementById('fileProgress').innerHTML = '';
+                        document.getElementById('fileName').style.color = 'lightgrey';
+
+                    }
+                }
+
+            }
+            else if (evt.data.startsWith('ALARM:')) {
+                var alarmNum = evt.data.split(/[:\r\n]/); //split by multiple delimiters using RegExp
+                alarmNum = alarmNum[1];
+                alarmNum = Number(alarmNum);
+                var alarmDetail = alarmCodes[alarmNum];
+                var alarmData = ('ALARM ' + alarmNum + ': ' + alarmDetail);
+                writeConsole(alarmData);
+            }
+            else if (evt.data.includes('error:')) {
+                var errorNum = evt.data.split(/[: ]/);
+                if (errorNum.length > 2) {
+                    var errorData = evt.data.replace('SD', 'Program');
+                }
+                else {
+                    errorNum = errorNum[1];
+                    errorNum = Number(errorNum);
+                    var errorDetail = errorCodes[errorNum];
+                    var errorData = ('Error ' + errorNum + ': ' + errorDetail);
+                }
+                writeConsole(errorData);
+            }
+            else if (evt.data.includes('$') == true) {
+                writeConsole(evt.data);
+            }
+            else if (evt.data.includes('[GC:') == true) {
+                var gcStr = evt.data.split(' '); //split by multiple delimiters using RegExp
+                // console.log(gcStr[1]);
+                wOffset = gcStr[1];
+                document.getElementById('woffset').innerHTML = wOffset;
+            }
+            else if (evt.data.startsWith('[FILE:') == true) {
+                console.log(evt.data);
+                var fileArray = evt.data.split(/\r\n/);
+                // fileArray = fileArray.replace('[FILE:', '');
+                // fileArray = fileArray.replace('SIZE:', '');
+                console.log(fileArray);
+            }
+            else if (evt.data.includes('Pgm End' || 'Program End') == true) {
+                document.getElementById('fileProgress').innerHTML = ('100%');   //last reporting from controller is not 100% in most cases
+                document.getElementById('fileName').style.color = 'lightgrey';
+                document.getElementById('fileProgress').style.color = 'lightgrey';
+                writeConsole('Program completed successfully.');
+                timePause();
+            }
+            else if (evt.data[0] == '[') {
+                writeConsole(evt.data);
+                var splitMessage = evt.data.split(':');
+                var messageType = splitMessage[0]; //select first element of array
+                messageType = messageType.substring(1); //remove initial '[' from string
+            }
+            else if (!evt.data.includes('ok')) {
+                writeConsole(evt.data);
+            }
+            else {
+                console.log(evt.data); // these are mostly "ok" responses
+            }
+        }
+
+        function onError(evt) {
+            console.log('WebSocket Communication error' + evt);
+        }
+
+        //code for keyboard shortcuts
+
+        var isInputFocused = false;
+
+        inputFocused = function () {
+            isInputFocused = true;
+        }
+
+        inputBlurred = function () {
+            isInputFocused = false;
+        }
+
+        var a;
+        if (localStorage.getItem('a')) {
+            a = parseFloat(localStorage.getItem('a'));
+        } else {
+            a = 0;
+        }
+        document.getElementById('brightness').style.backgroundColor = 'rgba(0, 0, 0, ' + a + ')';
+
+
+        function increaseBrightness() {
+            if (a > 0.1) {
+                a = a - 0.1;
+            }
+            document.getElementById('brightness').style.backgroundColor = 'rgba(0, 0, 0, ' + a + ')';
+            localStorage.setItem('a', a);
+            return a;
+        }
+        function decreaseBrightness() {
+            if (a < 0.5) {
+                a = a + 0.1;
+            }
+            document.getElementById('brightness').style.backgroundColor = 'rgba(0, 0, 0, ' + a + ')';
+            localStorage.setItem('a', a);
+            return a;
+        }
+        var ctrlKey = false;
+        var shiftKey = false;
+        var altKey = false;
+        var tabKey = false;
+
+        function onKeyDown(event) {
+            if (isInputFocused) {
+                return;                     //if input is focussed, keyboard keys should be used for typing instead of assigned tasks
+            }
+            switch (event.key) {
+                case 'Control':
+                    ctrlKey = true;
+                    event.preventDefault();
+                    break;
+                case 'Shift':
+                    shiftKey = true;
+                    event.preventDefault();
+                    break;
+                case 'Alt':
+                    altKey = true;
+                    event.preventDefault();
+                    break;
+                case 'Tab':
+                    tabKey = true;
+                    event.preventDefault();
+                    break;
+                case 'ArrowRight':
+                    Xp();
+                    event.preventDefault(); //this prevents default functions of arrow key in browser
+                    break;
+                case 'ArrowLeft':
+                    Xm();
+                    event.preventDefault();
+                    break;
+                case 'ArrowUp':
+                    event.preventDefault();
+                    if (shiftKey == true) {
+                        Zp();
+                    } else {
+                        Ym();
+                    }
+                    break;
+                case 'ArrowDown':
+                    event.preventDefault();
+                    if (shiftKey == true) {
+                        Zm();
+                    } else {
+                        Yp();
+                    }
+                    break;
+                case 'PageUp':
+                case '.':
+                    event.preventDefault();
+                    Zp();
+                    break;
+                case 'PageDown':
+                case ',':
+                    event.preventDefault();
+                    Zm();
+                    break;
+                case ']':
+                    Ap();
+                    event.preventDefault();
+                    break;
+                case '[':
+                    Am();
+                    event.preventDefault();
+                    break;
+                case 'F8':
+                    coolant();
+                    event.preventDefault();
+                    break;
+                case 'F9':
+                    spindle();
+                    event.preventDefault();
+                    break;
+                case 'F10':
+                    websocket.send('M5 M9\n');
+                    event.preventDefault();
+                    break;
+                case '1':
+                    document.getElementById('jd0').click();
+                    break;
+                case '2':
+                    document.getElementById('jd1').click();
+                    break;
+                case '3':
+                    document.getElementById('jd2').click();
+                    break;
+                case '4':
+                    document.getElementById('jd3').click();
+                    break;
+                case '5':
+                    document.getElementById('jd4').click();
+                    break;
+                case '6':
+                    document.getElementById('jd5').click();
+                    break;
+                case '9':
+                    start();
+                    break;
+                case '0':
+                    pause();
+                    break;
+                case 'Escape':
+                case 'Home':
+                    event.preventDefault();
+                    jogCancel();
+                    break;
+                case 'Pause':
+                    pause();
+                    break;
+                case 'p':
+                    probe();
+                    break;
+                case 'r':
+                    reset();
+                    break;
+                case 'u':
+                    unlock();
+                    break;
+                case 'h':
+                    home();
+                    break;
+                case 'f':
+                    toggleFullScreen();
+                    break;
+                case 'q':
+                    fovm();
+                    break;
+                case 'w':
+                    fovr();
+                    break;
+                case 'e':
+                    fovp();
+                    break;
+                case 'a':
+                    if (tabKey == true) {
+                        a0();
+                    } else {
+                        sovm();
+                    }
+                    break;
+                case 's':
+                    sovr();
+                    break;
+                case 'd':
+                    sovp();
+                    break;
+                case 'x':
+                    event.preventDefault();
+                    if (tabKey == true) {
+                        x0();
+                    } else {
+                        rov50();
+                    }
+                    break;
+                case 'c':
+                    rov100();
+                    break;
+                case 'y':
+                    if (tabKey == true) {
+                        y0();
+                    }
+                    break;
+                case 'z':
+                    if (tabKey == true) {
+                        z0();
+                    } else {
+                        rov25();
+                    }
+                    break;
+                case 'b':
+                    if (tabKey == true) {
+                        b0();
+                    }
+                    break;
+                case 'i':   //(tab + i) will give build info (to be used for troubleshooting only)
+                    if (tabKey == true) {
+                        websocket.send('$I\n');
+                    }
+                    break;
+                case 'F1':
+                    document.getElementById('jogbtn').click(); //Open Jog tab
+                    event.preventDefault();
+                    break;
+                case 'F2':
+                    document.getElementById('runbtn').click(); //Open Run tab
+                    event.preventDefault();
+                    break;
+                case 'F3':
+                    document.getElementById('settingsbtn').click(); //Open Settings tab
+                    event.preventDefault();
+                    break;
+                case 'F5':  //A running program on page refresh stops the machine. This is temporary solution till the firmware server code solves this. This solution is not tested. May need some more thought.
+                    if ((document.getElementById('state').innerHTML) == 'Idle') {
+                        location.reload();
+                    }
+                    else {
+                        event.preventDefault();
+                    }
+                    break;
+                case 'F6':
+                    decreaseBrightness();
+                    writeConsole('Screen brightness: ' + Math.round((1 - a) * 100) + '%')
+                    event.preventDefault();
+                    break;
+                case 'F7':
+                    increaseBrightness();
+                    writeConsole('Screen brightness: ' + Math.round((1 - a) * 100) + '%')
+                    event.preventDefault();
+                    break;
+                case '=':
+                case '+':
+                    increaseJogDistance();
+                    event.preventDefault();
+                    break;
+                case '-':
+                    decreaseJogDistance();
+                    event.preventDefault();
+                    break;
+                default:
+                    console.log(event);
+            }
+            // if (ctrlKey && event.key === 'x'){
+            //     x0();
+            //     event.preventDefault();
+            // }
+            // if (event.ctrlKey && event.key === 'y'){
+            //     y0();
+            // }
+        }
+        function onKeyUp(event) {
+            if (isInputFocused) {
+                return;
+            }
+            switch (event.key) {
+                case 'Shift':
+                    shiftKey = false;
+                    break;
+                case 'Control':
+                    ctrlKey = false;
+                    break;
+                case 'Alt':
+                    altKey = false;
+                    break;
+                case 'Tab':
+                    tabKey = false;
+                    break;
+            }
+        }
+        window.addEventListener('keydown', onKeyDown);
+        window.addEventListener('keyup', onKeyUp);
+
+        // Convert time to a format of hours, minutes, seconds, and milliseconds
+
+        function timeToString(time) {
+            let diffInHrs = time / 3600000;
+            let hh = Math.floor(diffInHrs).toString().padStart(2, "0");
+
+            let diffInMin = (diffInHrs - hh) * 60;
+            let mm = Math.floor(diffInMin).toString().padStart(2, "0");
+
+            let diffInSec = (diffInMin - mm) * 60;
+            let ss = Math.floor(diffInSec).toString().padStart(2, "0");
+
+            return `${hh}:${mm}:${ss}`;
+        }
+
+        let startTime;
+        let elapsedTime = 0;
+        let timerInterval;
+
+        function print(txt) {
+            document.getElementById('elapsedTime').innerHTML = txt;
+        }
+        function timeStart() {
+            startTime = Date.now() - elapsedTime;
+            timerInterval = setInterval(function printTime() {
+                elapsedTime = Date.now() - startTime;
+                timer = timeToString(elapsedTime);
+                print(timer);
+                localStorage.setItem('timer', timer);
+            }, 10);
+        }
+        function timePause() {
+            clearInterval(timerInterval);
+        }
+        function timeReset() {
+            clearInterval(timerInterval);
+            print("00:00:00");
+            elapsedTime = 0;
+        }
+        //end of main app code
+
+        //start of files code which populates program file data in tabular form
+        var filePath = '';
+        var fileUrl;
+        var sdSize;
+        var sdUsed;
+        var sdOccupation;
+        function updateFileUrl() {
+            fileUrl = new URL('http://' + serverUrl + '/upload?path=/' + filePath);
+            return Promise.resolve(fileUrl);
+        }
+        function backOneLevel() {
+            filePath = filePath + '../'     //adding '../' after URL takes it one directory up
+            reloadList();
+        }
+        function reloadList() {
+            updateFileUrl().then(
+                () => {
+                    fetch(fileUrl).then(function (response) {
+                        return response.text();
+                    }).then(function (text) {
+                        fileJson = text;
+                        return fileJson;
+                    }).then(function makeTable() {
+                        //console.log(fileJson);
+                        fileStr = JSON.parse(fileJson);
+                        var k = '<tbody>'
+                        for (i = 0; i < fileStr.files.length; i++) {
+                            k += '<tr>';
+                            if (fileStr.files[i].name != 'www') {       //system directory "www" will not be listed in files table
+                                k += '<td>' + fileStr.files[i].name + '</td>';
+                                k += '<td>' + fileStr.files[i].size + '</td>';
+                            }
+                            k += '</tr>';
+                        }
+                        k += '</tbody>';
+                        document.getElementById('tabledata').innerHTML = k;
+                        sdSize = fileStr.total;
+                        sdUsed = fileStr.used;
+                        sdOccupation = fileStr.occupation;
+                        document.getElementById('sdsize').innerHTML = sdUsed + '/' + sdSize;
+                        document.getElementById('sdpercent').innerHTML = sdOccupation + '%';
+                        document.getElementById('sdprogressbar').style.width = sdOccupation + "%";
+                    }).then(function tableFunc() {
+                        var table = document.getElementById('tabledata');
+                        var cells = table.getElementsByTagName('td');
+                        for (var i = 0; i < cells.length; i++) {
+                            var cell = cells[i];
+                            if (cell.innerHTML == '-1') {   //replacing innerText with innerHTML solved first instance folder color issue
+                                cell.innerHTML = 'Dir';
+                                cell.parentElement.className = 'directory';  //to style directory row in different background color
+                            }
+                            cell.onclick = function () {
+                                var rows = table.getElementsByTagName('tr');
+                                var rowId = this.parentNode.rowIndex - 1;
+                                for (var row = 0; row < rows.length; row++) { //this is required to stop multiple selection
+                                    rows[row].classList.remove('selected');
+                                }
+                                var rowSelected = table.getElementsByTagName('tr')[rowId];
+                                rowSelected.className += 'selected';
+                                if (rowSelected.cells[1].innerText == 'Dir') {   //these are directories
+                                    filePath = filePath + rowSelected.cells[0].innerText + '/';
+                                    reloadList();
+                                }
+                                else {
+                                    selectedFile = filePath + rowSelected.cells[0].innerHTML;
+                                }
+                            }
+                        }
+                    })
+                }
+            )
+        }
+        reloadList(); //this loads the file table but folder background color doesn't apply for the first instance
+        //end of files code which populates program file data in tabular form
+    </script>
+</body>
+
+</html>
