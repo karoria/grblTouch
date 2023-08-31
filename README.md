@@ -1,7 +1,7 @@
 # grblTouch
 grblTouch is a webUI optimized for 6 to 10 inch touch displays for grblHAL.
 
-grblTouch is written in plain html, css and javascript. This makes it a very lightweight even in uncompressed form. This webUI is updated in line with latest modifications in grblHAL where flash memory can be utilized to host webUI. A single webUI file in the form of "index.html.gz" is hosted from either littlefs or sdcard. This makes it simple, easy to use and easy to modify without any complex software requirements. Some parts of UI are inspired by "Shopfloor Tablet" UI by Mitch Bradley.
+grblTouch is written in plain html, css and javascript. This makes it a very lightweight webUI. This webUI is updated in line with latest modifications in grblHAL where flash memory can be utilized to host webUI. A single webUI file in the form of "index.html.gz" is hosted from either littlefs or sdcard. This makes it simple, easy to use and easy to modify without any complex software requirements. Some parts of UI are inspired by "Shopfloor Tablet" UI by Mitch Bradley.
 
 This is a basic but working webUI project based on websockets protocol. If you want to use grblTouch as is, then simply download "index.html.gz file from the source or releases section and put it to root of littlefs or sdcard. If you want to edit any part of this webUI, do the necessary modifications in "index.html" file and gzip it to make it "index.html.gz" and put it to root of littlefs or sdcard. We strongly recommend to use "FTP" (as there is no file upload/delete feature as of now in grblTouch) for any file transfer to and fro SD card by a suitable free software like "FileZilla".
 
