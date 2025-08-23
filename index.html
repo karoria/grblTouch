@@ -95,6 +95,7 @@
             height: 70%;
             top: 30%;
             left: 0;
+            z-index: 1;
         }
 
         /* Style the buttons that are used to open the tab content */
@@ -169,7 +170,7 @@
             top: 0;
             height: 20%;
             /*with respect to 30% height of parent div dro*/
-            width: 18%;
+            width: 14%;
             background-color: transparent;
             font-size: min(6vh, 3vw);
             color: whitesmoke;
@@ -191,18 +192,23 @@
         }
 
         #labelYw {
-            left: 22%;
+            left: 18%;
             color: powderblue;
         }
 
         #labelZw {
-            left: 43%;
+            left: 35%;
             color: khaki;
         }
 
         #labelAw {
-            left: 64%;
+            left: 52%;
             color: tan;
+        }
+
+        #labelBw {
+            left: 69%;
+            color: pink;
         }
 
         #Xw {
@@ -211,25 +217,30 @@
         }
 
         #Yw {
-            left: 22%;
+            left: 18%;
             color: powderblue;
         }
 
         #Zw {
-            left: 43%;
+            left: 35%;
             color: khaki;
         }
 
         #Aw {
-            left: 64%;
+            left: 52%;
             color: tan;
+        }
+
+        #Bw {
+            left: 69%;
+            color: pink;
         }
 
         .mcs {
             position: absolute;
             top: 16%;
             height: 14%;
-            width: 18%;
+            width: 14%;
             background-color: transparent;
             font-size: min(3vh, 1.5vw);
             color: lightgray;
@@ -243,15 +254,19 @@
         }
 
         #Ys {
-            left: 22%;
+            left: 18%;
         }
 
         #Zs {
-            left: 43%;
+            left: 35%;
         }
 
         #As {
-            left: 64%;
+            left: 52%;
+        }
+
+        #Bs {
+            left: 69%;
         }
 
 
@@ -259,8 +274,8 @@
             position: absolute;
             top: 30%;
             height: 26%;
-            width: 8.5%;
-            font-size: min(6vh, 3vw);
+            width: 6.5%;
+            font-size: min(5vh, 2.5vw);
             background-color: lightgrey;
             color: black;
             border: none;
@@ -278,43 +293,53 @@
         }
 
         #y0 {
-            left: 22%;
+            left: 18%;
             background-color: powderblue;
         }
 
         #z0 {
-            left: 43%;
+            left: 35%;
             background-color: khaki;
         }
 
         #a0 {
-            left: 64%;
+            left: 52%;
             background-color: tan;
         }
 
+        #b0 {
+            left: 69%;
+            background-color: pink;
+        }
+
         #gox0 {
-            left: 10.5%;
+            left: 8.5%;
             background-color: peachpuff;
         }
 
         #goy0 {
-            left: 31.5%;
+            left: 25.5%;
             background-color: powderblue;
         }
 
         #goz0 {
-            left: 52.5%;
+            left: 42.5%;
             background-color: khaki;
         }
 
         #goa0 {
-            left: 73.5%;
+            left: 59.5%;
             background-color: tan;
+        }
+
+        #gob0 {
+            left: 76.5%;
+            background-color: pink;
         }
 
         #labelFeed {
             position: absolute;
-            left: 10.5%;
+            left: 9.5%;
             color: whitesmoke;
             opacity: 50%;
             width: 8.5%;
@@ -324,7 +349,7 @@
 
         #Feed {
             position: absolute;
-            left: 1%;
+            left: 0.5%;
             width: 8.5%;
             background-color: transparent;
             font-size: min(6vh, 3vw);
@@ -336,7 +361,7 @@
 
         #labelRpm {
             position: absolute;
-            left: 31.5%;
+            left: 28%;
             color: orange;
             opacity: 50%;
             line-height: 6vh;
@@ -345,7 +370,7 @@
 
         #Rpm {
             position: absolute;
-            left: 22%;
+            left: 19%;
             width: 8.5%;
             background-color: transparent;
             font-size: min(6vh, 3vw);
@@ -357,8 +382,8 @@
 
         #fileName {
             position: absolute;
-            left: 43%;
-            width: 29%;
+            left: 34%;
+            width: 36%;
             background-color: transparent;
             font-size: min(5vh, 2.5vw);
             color: lightgrey;
@@ -368,7 +393,7 @@
 
         #fileProgress {
             position: absolute;
-            left: 64%;
+            left: 70%;
             width: 8.5%;
             background-color: transparent;
             font-size: min(5vh, 2.5vw);
@@ -379,8 +404,8 @@
 
         #ln {
             position: absolute;
-            left: 73.5%;
-            width: 8.5%;
+            left: 78.5%;
+            width: 9.5%;
             background-color: transparent;
             font-size: min(5vh, 2.5vw);
             text-align: right;
@@ -422,6 +447,20 @@
             font-size: min(6vh, 3vw);
             text-align: right;
             color: lightgray;
+            border: none;
+            outline: none;
+            text-transform: uppercase;
+        }
+
+        #activeTool {
+            position: absolute;
+            right: 1%;
+            top: 40%;
+            width: 10%;
+            background-color: transparent;
+            font-size: min(6vh, 3vw);
+            text-align: right;
+            color: orange;
             border: none;
             outline: none;
             text-transform: uppercase;
@@ -850,6 +889,132 @@
             height: 8vmin;
             border-radius: 2vh 2vh 0 0;
         }
+
+        #toolfunctions {
+            display: none;
+            width: 100vw;
+            height: 40vh;
+            top: 30%;
+            left: 0;
+            background: rgb(100, 100, 100);
+            position: absolute;
+            z-index: 2;
+            border-radius: 3vmin;
+        }
+
+        .toolbtn {
+            position: absolute;
+            height: 35%;
+            width: 10%;
+        }
+
+        /* .toolbtn.main {
+            width: 44%;
+            top: 7%;
+        } */
+        .toolbtn.ref {
+            background-color: darkgreen;
+        }
+
+        .toolbtn.change {
+            background-color: gold;
+            color: black;
+        }
+
+        #checktool {
+            left: 4%;
+        }
+
+        #reftool {
+            right: 4%;
+        }
+
+        #reft1 {
+            left: 2%;
+            top: 10%;
+        }
+
+        #reft2 {
+            left: 14%;
+            top: 10%;
+        }
+
+        #reft3 {
+            left: 26%;
+            top: 10%;
+        }
+
+        #reft4 {
+            left: 38%;
+            top: 10%;
+        }
+
+        #reft5 {
+            left: 2%;
+            top: 55%;
+        }
+
+        #reft6 {
+            left: 14%;
+            top: 55%;
+        }
+
+        #reft7 {
+            left: 26%;
+            top: 55%;
+        }
+
+        #reft8 {
+            left: 38%;
+            top: 55%;
+        }
+
+        #changet1 {
+            left: 52%;
+            top: 10%;
+        }
+
+        #changet2 {
+            left: 64%;
+            top: 10%;
+        }
+
+        #changet3 {
+            left: 76%;
+            top: 10%;
+        }
+
+        #changet4 {
+            left: 88%;
+            top: 10%;
+        }
+
+        #changet5 {
+            left: 52%;
+            top: 55%;
+        }
+
+        #changet6 {
+            left: 64%;
+            top: 55%;
+        }
+
+        #changet7 {
+            left: 76%;
+            top: 55%;
+        }
+
+        /* #changet8 {
+            left: 88%;
+            top: 55%;
+        } */
+
+        #exitTF {
+            left: 88%;
+            top: 55%;
+            background-color: darkred;
+        }
+
 
         /* (A) WRAPPER */
         #numWrap {
@@ -1378,26 +1543,30 @@
             <label id='labelYw' class='drolabel'>Y</label><input type="number" id="Yw" class='wcs'>
             <label id='labelZw' class='drolabel'>Z</label><input type="number" id="Zw" class='wcs'>
             <label id='labelAw' class='drolabel'>A</label><input type="number" id="Aw" class='wcs'>
+            <label id='labelBw' class='drolabel'>B</label><input type="number" id="Bw" class='wcs'>
             <label id='labelXs' class='drolabelm'>Xm</label><input type="number" id="Xs" class='mcs'>
             <label id='labelYs' class='drolabelm'>Ym</label><input type="number" id="Ys" class='mcs'>
             <label id='labelZs' class='drolabelm'>Zm</label><input type="number" id="Zs" class='mcs'>
             <label id='labelAs' class='drolabelm'>Am</label><input type="number" id="As" class='mcs'>
+            <label id='labelBs' class='drolabelm'>Bm</label><input type="number" id="Bs" class='mcs'>
 
             <div id="state"></div>
 
             <div id="woffset"></div>
-
+            <div id="activeTool"></div>
 
 
             <button id="x0" class="drobtn" onclick="x0();">X=0</button>
             <button id="y0" class="drobtn" onclick="y0();">Y=0</button>
             <button id="z0" class="drobtn" onclick="z0();">Z=0</button>
             <button id="a0" class="drobtn" onclick="a0();">A=0</button>
+            <button id="b0" class="drobtn" onclick="b0();">B=0</button>
 
             <button id="gox0" class="drobtn" onclick="gox0();">&#10148;X0</button>
             <button id="goy0" class="drobtn" onclick="goy0();">&#10148;Y0</button>
             <button id="goz0" class="drobtn" onclick="goz0();">&#10148;Z0</button>
             <button id="goa0" class="drobtn" onclick="goa0();">&#10148;A0</button>
+            <button id="gob0" class="drobtn" onclick="gob0();">&#10148;B0</button>
 
         </div>
         <div id="fsdetails" class="fsdetails">
@@ -1433,7 +1602,39 @@
             <button class='cmdbtn' id="probe" onclick="probe();">Probe</button>
             <button class='cmdbtn' id="spindle" onclick="spindle();">Spindle</button>
             <button class='cmdbtn' id="coolant" onclick="coolant();">Coolant</button>
-            <button class='cmdbtn' id="tool" onclick="tool();">Tool</button>
+            <button class='cmdbtn' id="tool" onclick="showToolFunctions();">Tool</button>
+        </div>
+
+        <div id="toolfunctions">
+            <!-- <button class='toolbtn main' id="checktool" onclick="checkTool();">Check Tool Number</button> -->
+            <!-- <button class='toolbtn main' id="reftool" onclick="refTool();">Reference Probing</button> -->
+            <button class='toolbtn ref' id="reft1" value="1" onclick="refTool(this); checkTool();">Ref T1</button>
+            <button class='toolbtn ref' id="reft2" value="2" onclick="refTool(this); checkTool();">Ref T2</button>
+            <button class='toolbtn ref' id="reft3" value="3" onclick="refTool(this); checkTool();">Ref T3</button>
+            <button class='toolbtn ref' id="reft4" value="4" onclick="refTool(this); checkTool();">Ref T4</button>
+            <button class='toolbtn ref' id="reft5" value="5" onclick="refTool(this); checkTool();">Ref T5</button>
+            <button class='toolbtn ref' id="reft6" value="6" onclick="refTool(this); checkTool();">Ref T6</button>
+            <button class='toolbtn ref' id="reft7" value="7" onclick="refTool(this); checkTool();">Ref T7</button>
+            <button class='toolbtn ref' id="reft8" value="8" onclick="refTool(this); checkTool();">Ref T8</button>
+
+            <button class='toolbtn change' id="changet1" value="1" onclick="changeTool(this); checkTool();">Change
+                T1</button>
+            <button class='toolbtn change' id="changet2" value="2" onclick="changeTool(this); checkTool();">Change
+                T2</button>
+            <button class='toolbtn change' id="changet3" value="3" onclick="changeTool(this); checkTool();">Change
+                T3</button>
+            <button class='toolbtn change' id="changet4" value="4" onclick="changeTool(this); checkTool();">Change
+                T4</button>
+            <button class='toolbtn change' id="changet5" value="5" onclick="changeTool(this); checkTool();">Change
+                T5</button>
+            <button class='toolbtn change' id="changet6" value="6" onclick="changeTool(this); checkTool();">Change
+                T6</button>
+            <button class='toolbtn change' id="changet7" value="7" onclick="changeTool(this); checkTool();">Change
+                T7</button>
+            <!-- <button class='toolbtn change' id="changet8" value="8" onclick="changeTool(this); checkTool();">Change
+                T8</button> -->
+
+            <button class='toolbtn' id="exitTF" value="8" onclick="hideToolFunctions();">X</button>
         </div>
 
         <div id="jog" class="tabcontent">
@@ -1449,10 +1650,10 @@
             <button id="bm" onclick="Bm();">B-</button>
             <button id="bp" onclick="Bp();">B+</button>
 
-            <input type='text' class='mdi' id='mdi1' onfocus="this.value=''; inputFocused();"
-                onblur="inputBlurred();"><button onclick='mdi1();' class='mdibtn' id='mdi1btn'>MDI1</button>
-            <input type='text' class='mdi' id='mdi2' onfocus="this.value=''; inputFocused();"
-                onblur="inputBlurred();"><button onclick='mdi2();' class='mdibtn' id='mdi2btn'>MDI2</button>
+            <input type='text' class='mdi' id='mdi1' onfocus="inputFocused();" onblur="inputBlurred();"><button
+                onclick='mdi1();' class='mdibtn' id='mdi1btn'>MDI1</button>
+            <input type='text' class='mdi' id='mdi2' onfocus="inputFocused();" onblur="inputBlurred();"><button
+                onclick='mdi2();' class='mdibtn' id='mdi2btn'>MDI2</button>
 
             <div id="radio-buttons" class="radio-toolbar">
                 <input type="radio" id="jd0" name="jogdistance" value="0.001" onclick="radioClick(this);">
@@ -1516,8 +1717,7 @@
         //section for user customization
         const wsPort = 81;      //websockets port. default 81
         var jogDistanceArray = [0.001, 0.01, 0.1, 1, 5, 25]; //distances are in mm. please don't change this unless you find out its relevance at other places in code
-        var pollInterval = 250; //use 300-500 for wifi based communication, 150 for wired ethernet
-        const probethickness = 19.20; // height of Z-probe plate
+        var pollInterval = 150; //use 300-500 for wifi based communication, 150 for wired ethernet
         var jogSpeed = 3000; //in mm/min. this speed is applicable while jogging
         var positionSpeed = 3000; //in mm/min. this speed is applicable while directly going to X0, Y0, Z0, etc.
         //Be cautious to use Y- and Y+ jog buttons as they are reversed to suit "valay" mini VMC machines which is used for testing this code.
@@ -1533,7 +1733,7 @@
                 document.documentElement.requestFullscreen();
             }
         };
-        var jogDistanceIndex, selectedFile, fileJson, fileInfo, mcx, mcy, mcz, mca, wcx, wcy, wcz, wca, wcox, wcoy, wcoz, wcoa, timer, sp, cl;
+        var jogDistanceIndex, selectedFile, fileJson, fileInfo, mcx, mcy, mcz, mca, wcx, wcy, wcz, wca, wcox, wcoy, wcoz, wcoa, timer, sp, cl, toolTable, eventData, toolOffsetData = '', toolHeightOffset;
 
         function openTab(evt, tabName) {
             // Declare all variables
@@ -1588,6 +1788,40 @@
             websocket.onmessage = function (evt) { onMessage(evt) };
             websocket.onerror = function (evt) { onError(evt) };
         }
+
+        //code from chatgpt
+        function sendDataAndWaitForOk(websocket, data) {
+            return new Promise((resolve, reject) => {
+                let accumulatedMessages = '';
+
+                // Send the data
+                websocket.send(data);
+
+                // Create a listener for incoming messages
+                const messageListener = (event) => {
+                    const message = event.data;
+                    accumulatedMessages += message; // Accumulate messages
+
+                    // Check if the received message contains "ok"
+                    if (message.includes("ok")) {
+                        // Remove the listener and resolve the promise
+                        websocket.removeEventListener('message', messageListener);
+                        resolve(accumulatedMessages);
+                        console.log(accumulatedMessages);
+                    }
+                };
+
+                // Add the message listener
+                websocket.addEventListener('message', messageListener);
+
+                // Handle errors
+                websocket.addEventListener('error', (error) => {
+                    websocket.removeEventListener('message', messageListener);
+                    reject(`WebSocket error: ${error.message}`);
+                });
+            });
+        }
+        //code from chatgpt ends here
 
         function onOpen(evt) {
             //websocket.send('\030'); //send reset to start communication when autoreport is on
@@ -1685,7 +1919,18 @@
             window.mdi1 = function () {
                 var mdi1 = document.getElementById('mdi1').value;
                 localStorage.setItem('mymdi1', mdi1); //code for making text input persistant
-                websocket.send(mdi1 + '\n');
+
+                //chatgpt function call
+                sendDataAndWaitForOk(websocket, mdi1 + '\n')
+                    .then(response => {
+                        console.log('Accumulated response:', response);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                //chatgpt function call ends here
+
+                // websocket.send(mdi1 + '\n');
                 // websocket.send('$G\n'); //better strategy can be used to get G54/55 etc states
             }
             window.mdi2 = function () {
@@ -1794,19 +2039,27 @@
                 writeConsole('Feedhold. Press Spindle and/or Coolant buttons to toggle them ON/OFF while on feedhold. Press start to resume');
             }
 
-            window.tool = function () {
-                websocket.send('\xA3'); //for stop. not as harsh as reset. grblHAL feature.
-                timePause();
+            window.showToolFunctions = function () {
+                document.getElementById('toolfunctions').style.display = "block";
+            }
+
+            window.checkTool = function () {
+                websocket.send('$#=_current_tool\n')
+            }
+            window.refTool = function (tn) {
+                websocket.send('G65 P301 T' + tn.value + '\n');
+                hideToolFunctions();
+            }
+            window.changeTool = function (tn) {
+                websocket.send('T' + tn.value + ' M6\n');
+                hideToolFunctions();
+            }
+            window.hideToolFunctions = function () {
+                document.getElementById('toolfunctions').style.display = "none";
             }
 
             window.probe = function () {
-                websocket.send('G91\n');
-                websocket.send('G38.2 Z-20 F50\n');
-                websocket.send('G90\n');
-                websocket.send('G10 L20 P0 Z' + probethickness + '\n');
-                websocket.send('G91\n');
-                websocket.send('G0 Z50\n');
-                websocket.send('G90\n');
+                websocket.send('G65 P100\n');
             }
         }
 
@@ -1816,8 +2069,15 @@
         }
 
         function onMessage(evt) {
+            // eventData = evt.data.split(/\r/);
+            // var indexOk = eventData.findIndex(element => element.includes('ok'));
+            // if (indexOk !== -1) {
+            //     for (i = 0; i <= indexOk; i++) {
 
-            // console.log(evt.data);
+            //     }
+            //     console.log('OK is at array element: ' + indexOk)
+            // }
+
             if (evt.data[0] == '<') { //These are realtime status reports
                 //Code for getting status and modify its style dynamically
                 var splitString = evt.data.split('|');
@@ -1861,6 +2121,7 @@
                     wcoy = parseFloat(wco[1]);
                     wcoz = parseFloat(wco[2]);
                     wcoa = parseFloat(wco[3]);
+                    wcob = parseFloat(wco[4]);
                 }
                 var indexmpos = splitString.findIndex(element => element.includes('MPos:'));
                 var mpos = splitString[indexmpos];
@@ -1872,7 +2133,9 @@
                     mcz = parseFloat(mpos[2]);
                     if (mpos[3]) {
                         mca = parseFloat(mpos[3]);
-                        //console.log(mca);
+                    }
+                    if (mpos[4]) {
+                        mcb = parseFloat(mpos[4]);
                     }
                     document.getElementById('Xs').value = mcx.toFixed(3);
                     document.getElementById('Ys').value = mcy.toFixed(3);
@@ -1880,10 +2143,14 @@
                     if (mca || mca == 0) {
                         document.getElementById('As').value = mca.toFixed(3);
                     }
+                    if (mcb || mcb == 0) {
+                        document.getElementById('Bs').value = mcb.toFixed(3);
+                    }
                     wcx = mcx - wcox;
                     wcy = mcy - wcoy;
                     wcz = mcz - wcoz;
                     wca = mca - wcoa;
+                    wcb = mcb - wcob;
                     if (wcx || wcx == 0)
                         document.getElementById('Xw').value = wcx.toFixed(3);
                     if (wcy || wcy == 0)
@@ -1892,6 +2159,8 @@
                         document.getElementById('Zw').value = wcz.toFixed(3);
                     if (wca || wca == 0)
                         document.getElementById('Aw').value = wca.toFixed(3);
+                    if (wcb || wcb == 0)
+                        document.getElementById('Bw').value = wcb.toFixed(3);
                 }
 
                 var indexfs = splitString.findIndex(element => element.includes('FS:'));
@@ -2018,6 +2287,14 @@
                     else { document.getElementById('clnt').style.background = 'grey'; }
                 }
 
+                var indext = splitString.findIndex(element => element.includes('T:'));
+                var toolNo = splitString[indext];
+                if (toolNo) {
+                    toolNo = toolNo.split(/[:>]/)
+                    toolNo = toolNo[1];
+                    document.getElementById('activeTool').innerHTML = ('T' + toolNo);
+                }
+
                 var indexsd = splitString.findIndex(element => element.includes('SD:'));
                 var sd = splitString[indexsd];
                 if (sd) {  //used nested if to debug a warning regarding substring property of undefined
@@ -2025,6 +2302,7 @@
                     sd = sd.replace(/[/]/, ''); //remove initial "/" from file /path/name
                     sd = sd.split(/[,>]/);
                     var fileProgress = parseFloat(sd[0]).toFixed(1);
+                    localStorage.setItem('progress', fileProgress)
                     var fileName = sd[1];
                     localStorage.setItem('fileName', fileName); //code for making text input persistant
                     document.getElementById('fileName').innerHTML = fileName;
@@ -2034,7 +2312,7 @@
                         document.getElementById('fileProgress').style.color = 'cyan';
                     }
                     else {
-                        document.getElementById('fileProgress').innerHTML = '';
+                        //document.getElementById('fileProgress').innerHTML = '';
                         document.getElementById('fileName').style.color = 'lightgrey';
 
                     }
@@ -2042,6 +2320,7 @@
 
             }
             else if (evt.data.startsWith('ALARM:')) {
+                console.log(evt.data);
                 var alarmNum = evt.data.split(/[:\r\n]/); //split by multiple delimiters using RegExp
                 alarmNum = alarmNum[1];
                 alarmNum = Number(alarmNum);
@@ -2050,6 +2329,7 @@
                 writeConsole(alarmData);
             }
             else if (evt.data.includes('error:')) {
+                console.log(evt.data);
                 var errorNum = evt.data.split(/[: ]/);
                 if (errorNum.length > 2) {
                     var errorData = evt.data.replace('SD', 'Program');
@@ -2063,9 +2343,11 @@
                 writeConsole(errorData);
             }
             else if (evt.data.includes('$') == true) {
+                console.log(evt.data);
                 writeConsole(evt.data);
             }
             else if (evt.data.includes('[GC:') == true) {
+                console.log(evt.data);
                 var gcStr = evt.data.split(' '); //split by multiple delimiters using RegExp
                 // console.log(gcStr[1]);
                 wOffset = gcStr[1];
@@ -2078,39 +2360,70 @@
                 // fileArray = fileArray.replace('SIZE:', '');
                 console.log(fileArray);
             }
+            else if (evt.data.startsWith('[PARAM:_current_tool') == true) {
+                // intentionally left blank to avoid printing data to console.
+            }
             else if (evt.data.includes('Pgm End' || 'Program End') == true) {
+                console.log(evt.data);
                 document.getElementById('fileProgress').innerHTML = ('100%');   //last reporting from controller is not 100% in most cases
                 document.getElementById('fileName').style.color = 'lightgrey';
                 document.getElementById('fileProgress').style.color = 'lightgrey';
                 writeConsole('Program completed successfully.');
                 timePause();
             }
-            else if (evt.data[0] == '[') {
-                writeConsole(evt.data);
-                var splitMessage = evt.data.split(':');
-                var messageType = splitMessage[0]; //select first element of array
-                messageType = messageType.substring(1); //remove initial '[' from string
+
+            else if ((evt.data.includes('[T:') == true) && (evt.data.includes('ok') == false)) {    //broken strings of websockets
+                toolOffsetData = toolOffsetData + evt.data;     //cumulate all the chunks until chunk with 'ok' response received.
             }
+
+            else if (evt.data.includes('[T:') == true) {    //last chunk which includes 'ok'
+                toolOffsetData = toolOffsetData + evt.data;
+                console.log(toolOffsetData);
+                toolTable = toolOffsetData.split(/[\n]/);                //    sd = sd.split(/[,>]/);
+                console.log(toolTable);
+                var j = '';
+                for (var i = 0; i <= (toolTable.length - 1); i++) {
+                    if (toolTable[i].includes('[T:') == true) {
+                        j++;
+                        // writeConsole(toolTable[i]);
+                        toolHeightOffset = toolTable[i].split(/[,]/);
+                        writeConsole('T' + j + ' height: ' + toolHeightOffset[2]);
+                    }
+                }
+                j = '';
+                toolOffsetData = '';
+            }
+
+            else if (evt.data[0] == '[') {
+                console.log(evt.data);
+                //writeConsole(evt.data);
+                //     var splitMessage = evt.data.split(':');
+                //     var messageType = splitMessage[0]; //select first element of array
+                //     messageType = messageType.substring(1); //remove initial '[' from string
+            }
+
             else if (!evt.data.includes('ok')) {
-                writeConsole(evt.data);
+                console.log(evt.data);
+                // writeConsole(evt.data);
             }
             else {
-                console.log(evt.data); // these are mostly "ok" responses
+                console.log(evt.data);
+                //console.log(evt.data); // these are mostly "ok" responses
             }
         }
 
         function onError(evt) {
             console.log('WebSocket Communication error' + evt);
         }
+        document.getElementById('mdi1').value = localStorage.getItem('mymdi1'); //making last MDI command persistent over power cycle.
+        document.getElementById('mdi2').value = localStorage.getItem('mymdi2');
 
         //code for keyboard shortcuts
 
         var isInputFocused = false;
-
         inputFocused = function () {
             isInputFocused = true;
         }
-
         inputBlurred = function () {
             isInputFocused = false;
         }
@@ -2206,6 +2519,14 @@
                     break;
                 case '[':
                     Am();
+                    event.preventDefault();
+                    break;
+                case '}':
+                    Bp();
+                    event.preventDefault();
+                    break;
+                case '{':
+                    Bm();
                     event.preventDefault();
                     break;
                 case 'F8':
@@ -2354,23 +2675,18 @@
                     break;
                 case '=':
                 case '+':
+                case '\'':                  //compatibility with new keyboard. \ sign is just escape character to rightly interprete single quote.
                     increaseJogDistance();
                     event.preventDefault();
                     break;
                 case '-':
+                case ';':
                     decreaseJogDistance();
                     event.preventDefault();
                     break;
                 default:
                     console.log(event);
             }
-            // if (ctrlKey && event.key === 'x'){
-            //     x0();
-            //     event.preventDefault();
-            // }
-            // if (event.ctrlKey && event.key === 'y'){
-            //     y0();
-            // }
         }
         function onKeyUp(event) {
             if (isInputFocused) {
@@ -2391,8 +2707,60 @@
                     break;
             }
         }
+
+
+
+
+        // function onLongPress(event) {
+        //     if (isInputFocused) {
+        //         return;
+        //     }
+        //     switch (event.key) {
+        //         case 'ArrowRight':
+        //             Xp();
+        //             event.preventDefault(); //this prevents default functions of arrow key in browser
+        //             break;
+        //         case 'Control':
+        //             ctrlKey = false;
+        //             break;
+        //         case 'Alt':
+        //             altKey = false;
+        //             break;
+        //         case 'Tab':
+        //             tabKey = false;
+        //             break;
+        //     }
+        // }
+
+
+
+
+
+
+
+        // Code for Enter key behaviour after writing to MDI fields
+        var input1 = document.getElementById("mdi1");
+        var input2 = document.getElementById("mdi2");
+
+        // Execute a function when the user presses a key on the keyboard
+        input1.addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                mdi1();
+                document.getElementById("mdi1").blur();
+            }
+        });
+        input2.addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                mdi2();
+                document.getElementById("mdi2").blur();
+            }
+        });
+
         window.addEventListener('keydown', onKeyDown);
         window.addEventListener('keyup', onKeyUp);
+        // window.addEventListener('long-press', onLongPress);
 
         // Convert time to a format of hours, minutes, seconds, and milliseconds
 
