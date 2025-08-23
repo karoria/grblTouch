@@ -14,6 +14,19 @@ Folders/Directories are now supported and they will be highlighted in yellow in 
 grblTouch also facilitates keyboard shortcuts as per following table.
 
 
+
+# About latest release v7.2:
+This is a major upgrade which enhances features as well as user interface. Some of the features are highlighted as under:
+
+1. Automatic tool change support with tool touch off probe using macro. For this make a macro named "P301.macro" with code suitable to your machine and put it in littlefs or sdcard root.
+2. ATC supported with tc.macro.
+3. Toggle spindle and coolant on/off functionality when machine is idle. default spindle rpm is 6000. You may change as per your requirements.
+4. For probing, make a macro named "P100.macro" and enjoy workpiece probing.
+5. For easy workpiece centre top zero, jog the machine towards X axis left edge of the workpiece precisely (tool just touches edge, one can use thin paper). Make that edge zero using X=0 button (this is temporary as a part of process), then lift the axis in Z to clear workpiece and jog it to opposite edge of workpiece and make the tool touch that edge precisely then lift the Z to clear workpiece without moving X axis (Be 100% sure to clear up to this point before proceeding) click/touch on X axis work-coordinate to open a calculator like interface. On the right side there are 3 buttons in sequence namely "Get", "Half" and "Go". The Get button will copy X work-coordinate to calculator console, the Half button will calculate half of it and Go button will actually move axis to go to the centre of workpiece (this is why one needs to use caution nothing is in between tool and the point where it goes). Now you can use X=0 button again to make X zero at this point. Repeat this process for Y axis also. As a result, you will find X and Y zero in workpiece centre very easily without using any maths manually or by calculator.
+6. "$#" command in MDI will return all the tool heights in UI console for better visibility. For full details, one can use chrome console of dev tools.
+7. Screenshots shown under are from older version with less functionality, so please ignore it till they are updated.
+
+
 Keyboard Shortcuts (Use with caution!):
 ------------------------------------------------------
 Key: Function  
